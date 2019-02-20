@@ -48,5 +48,5 @@ int main(int argc, const char *argv[]){
         i = i + 1;
     }
 
-    printf("Execució completada\n");
+    printf("Execució completada!\n");
 }
