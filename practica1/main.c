@@ -20,13 +20,18 @@ int main(int argc, const char *argv[]){
     //Descartem els primers 44 bytes del fitxer (capçalera) 
     char header[88];
     fread(header, 1, 44, fpr); //Llegim la capçalera
-    
 
     //Declaració del buffer i factor normalització de la senyal
     short  buffer[NSAMPLES];
     float x[NSAMPLES];
+    float x_windowed[NSAMPLES];
+    float w[NSAMPLES];
     float  norm_factor = 1.0/ (float) 0x8000; /* 16 bits: 0x8000 = 2^15 */
     int i = 0;
+    float w_p;
+
+    //AMPLIACIÓ: Inicialització de la finestra
+    hamming_window(&w[0], &w_p, NSAMPLES);
 
     //While loop. Executem fins que no queden bytes per llegir en el fitxer
     while( fread(buffer, 1, NSAMPLES, fpr) == NSAMPLES)
@@ -36,8 +41,14 @@ int main(int argc, const char *argv[]){
             x[i] = (float) buffer[i] * norm_factor;
         }
 
+        //AMPLIACIÓ: Càlcul de la senyal enfinestrada
+        apply_window(&x[0], &w[0], &x_windowed[0], NSAMPLES);
+
         //Càlcul de les mètriques
-        float power = compute_power(x, NSAMPLES);
+        float power = compute_power(x_windowed, NSAMPLES);
+        //AMPLIACIÓ: segons la definició de la potencia en l'apartat 4 
+        //és calcula sense dividir per N
+        power = power - w_p + 10*log10(NSAMPLES);  
         float amplitude = compute_am(x, NSAMPLES);
         float zero_cross_rate = compute_zcr(x, NSAMPLES);
 

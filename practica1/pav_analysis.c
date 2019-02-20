@@ -40,3 +40,25 @@ float  compute_zcr(const  float *x, unsigned  int N){
     //coment per a provar el sync
     return value_f;
 }
+
+void hamming_window(float* w, float *w_p, unsigned int N){
+    //Computes a Hamming window of N samples and calculates the power of the window (1)
+    for (int i=0; i<N; i++){
+        w[i] = 0.54 - 0.46*cos(2*M_PI*(i)/(N-1));
+    }
+
+    //Càlcul de la potència
+    float size = 0.0;
+    for (int i=0; i<N; i++){
+        size = size + pow(w[i],2);
+    }
+    *w_p = -10*log10(size);
+    //printf("%f",size);
+}
+
+void apply_window(float* x, float* w, float* x_windowed, unsigned int N){
+    //Applies window to function x
+    for (int i =0; i<N; i++){
+        x_windowed[i] = (x[i]*w[i]);
+    }
+}
