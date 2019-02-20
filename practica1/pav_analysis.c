@@ -37,5 +37,6 @@ float  compute_zcr(const  float *x, unsigned  int N){
         }
     }
     float value_f = count/(2.0*(N-1));
+    //coment per a provar el sync
     return value_f;
 }
