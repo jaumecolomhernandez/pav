@@ -78,6 +78,7 @@ int main(int argc, const char *argv[]) {
 
     if (sndfile_out != 0) {
       /* TODO: copy all the samples into sndfile_out */
+      
     }
 
     state = vad(vad_data, buffer);
@@ -86,7 +87,7 @@ int main(int argc, const char *argv[]) {
 
 
     if (sndfile_out != 0) {
-      /* TODO: go back and write zeros if silence */
+      /* TODO: go back and write zeros if silence EXTRA */
     }
 
     if (state != last_state) {
