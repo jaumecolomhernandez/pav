@@ -2,10 +2,11 @@
 #include "vad.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include "pav_analysis.h"
 
 const float FRAME_TIME = 10.0F; /* in ms. */
 
-/* 
+/*
    As the output state is only ST_VOICE, ST_SILENCE, or ST_UNDEF,
    only this labels are needed. You need to add all labels, in case
    you want to print the internal state in string format */
@@ -25,27 +26,41 @@ typedef struct {
   float am;
 } Features;
 
-
 /* TODO: Delete and use your own features! */
-Features compute_features(const float *x, int N) {
-  /* 
-     Input: x[i] : i=0 .... N-1 
+Features compute_features(const float *buffer, int N) {
+  /*
+     Input: x[i] : i=0 .... N-1
      Ouput: computed features
   */
 
 
   /* DELETE and include a call to your own functions */
   /* For the moment, compute random value
-     between 0 and 1 
+     between 0 and 1
   */
+  float x[N];
+  float x_windowed[N];
+  float w[N];
+  float  norm_factor = 1.0/ (float) 0x8000; /* 16 bits: 0x8000 = 2^15 */
+  int i = 0;
+  float w_p;
+
+  for (int i=0; i<N; i++){
+            x[i] = (float) buffer[i] * norm_factor;
+  }
+  hamming_window(&w[0], &w_p, N);
+  apply_window(&x[0], &w[0], &x_windowed[0], N);
 
   Features feat;
-  feat.zcr = feat.p = feat.am = (float) rand()/RAND_MAX;
+  feat.zcr = compute_zcr(x, N);
+  feat.p = compute_power(x_windowed, N) - w_p + 10*log10(N);
+  feat.am = compute_am(x, N);
   return feat;
 }
 
 
-/* 
+
+/*
    TODO: Init the values of vad_data
  */
 
@@ -72,8 +87,8 @@ unsigned int vad_frame_size(VAD_DATA *vad_data) {
 
 
 
-/* 
-   TODO: Implement the Voice Activity Detection 
+/*
+   TODO: Implement the Voice Activity Detection
    using a Finite State Automata
 */
 
