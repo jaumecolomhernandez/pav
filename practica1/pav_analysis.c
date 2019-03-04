@@ -39,6 +39,7 @@ float  compute_am(const  float *x, unsigned  int N){
     amplitude = amplitude/N;
     return amplitude;
 }
+
 float  compute_zcr(const  float *x, unsigned  int N){
     //Càlcula el zero cross rate
     int count = 0;

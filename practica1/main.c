@@ -17,8 +17,8 @@ int main(int argc, const char *argv[]){
     fpw = fopen(argv[2], "w");
 
     //Lectura header
-    //Descartem els primers 44 bytes del fitxer (capçalera) 
-    char header[88];
+    //Descartem els primers 44 bytes del fitxer (capçalera)
+    char header[44];
     fread(header, 1, 44, fpr); //Llegim la capçalera
 
     //Declaració del buffer i factor normalització de la senyal
@@ -34,7 +34,7 @@ int main(int argc, const char *argv[]){
     hamming_window(&w[0], &w_p, NSAMPLES);
 
     //While loop. Executem fins que no queden bytes per llegir en el fitxer
-    while( fread(buffer, 1, NSAMPLES, fpr) == NSAMPLES)
+    while( fread(buffer, 2, NSAMPLES, fpr) == NSAMPLES)
     {
         //Normalització de la senyal
         for (int i=0; i<NSAMPLES; i++){
@@ -46,9 +46,9 @@ int main(int argc, const char *argv[]){
 
         //Càlcul de les mètriques
         float power = compute_power(x_windowed, NSAMPLES);
-        //AMPLIACIÓ: segons la definició de la potencia en l'apartat 4 
+        //AMPLIACIÓ: segons la definició de la potencia en l'apartat 4
         //és calcula sense dividir per N
-        power = power - w_p + 10*log10(NSAMPLES);  
+        power = power - w_p + 10*log10(NSAMPLES);
         float amplitude = compute_am(x, NSAMPLES);
         float zero_cross_rate = compute_zcr(x, NSAMPLES);
 
