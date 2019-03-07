@@ -6,11 +6,11 @@
 #define DEBUG_VAD 0x1
 
 int main(int argc, const char *argv[]) {
-  int verbose = 0; 
-  /* To show internal state of vad 
-     verbose = DEBUG_VAD; 
+  int verbose = 0;
+  /* To show internal state of vad
+     verbose = DEBUG_VAD;
   */
-
+  double silence_time=0;
   SNDFILE *sndfile_in, *sndfile_out = 0;
   SF_INFO sf_info;
   FILE *vadfile;
@@ -25,7 +25,7 @@ int main(int argc, const char *argv[]) {
   float t, last_t;
 
   if (argc != 3 && argc != 4) {
-    fprintf(stderr, "Usage: %s input_file.wav output.vad [output_file.wav]\n", 
+    fprintf(stderr, "Usage: %s input_file.wav output.vad [output_file.wav]\n",
             argv[0]);
     return -1;
   }
@@ -78,10 +78,10 @@ int main(int argc, const char *argv[]) {
 
     if (sndfile_out != 0) {
       /* TODO: copy all the samples into sndfile_out */
-      
+
     }
 
-    state = vad(vad_data, buffer);
+    state = vad(vad_data, buffer, &silence_time);
     if (verbose & DEBUG_VAD)
       vad_show_state(vad_data, stdout);
 

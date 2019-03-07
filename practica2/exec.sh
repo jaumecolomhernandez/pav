@@ -5,4 +5,4 @@ make
 #Execute compiled file
 python run_vad.py 
 #Evaluation
-./vad_evaluation.pl ./audios/*/*.lab
+./vad_evaluation.pl ./audios/*.lab
