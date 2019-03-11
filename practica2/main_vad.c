@@ -20,6 +20,7 @@ int main(int argc, const char *argv[]) {
   VAD_STATE state, last_state;
 
   float *buffer, *buffer_zeros;
+  short *buffer_short;
   int frame_size;        /* in samples */
   float frame_duration;  /* in seconds */
   float t, last_t;
@@ -78,7 +79,13 @@ int main(int argc, const char *argv[]) {
 
     if (sndfile_out != 0) {
       /* TODO: copy all the samples into sndfile_out */
-      
+      /*CONVERT DATA TO SHORT TYPE */
+      buffer_short = (short *) malloc(frame_size * sizeof(float));
+      float  norm_factor = (short) 0x1000;
+      for(i=0; i<frame_size; i++){
+        buffer_short[i] = (short) buffer[i]*300;
+      }
+      sf_write_short(sndfile_out, buffer_short, frame_size);
     }
 
     state = vad(vad_data, buffer);
@@ -88,6 +95,7 @@ int main(int argc, const char *argv[]) {
 
     if (sndfile_out != 0) {
       /* TODO: go back and write zeros if silence EXTRA */
+
     }
 
     if (state != last_state) {
