@@ -19,29 +19,13 @@ const char *state2str(VAD_STATE st) {
   return state_str[st];
 }
 
-// /* Define a datatype with interesting features */
-// typedef struct {
-//   float zcr;
-//   float p;
-//   float am;
-// } Features;
+// Hem definit el struct Features a vad.h
 
-/* TODO: Delete and use your own features! */
-//const float *x ?????
 Features compute_features(float *x, int N) {
-  /*
-     Input: x[i] : i=0 .... N-1
-     Ouput: computed features
-  */
-
-  /* DELETE and include a call to your own functions */
-  /* For the moment, compute random value
-     between 0 and 1
-  */
+  /*Computes features and returns a Features struct*/
 
   float x_windowed[N];
   float w[N];
-  //float  norm_factor = 1.0/ (float) 0x8000; /* 16 bits: 0x8000 = 2^15 */
   float norm_factor = 1.0;
   int i = 0;
   float w_p;
@@ -54,16 +38,16 @@ Features compute_features(float *x, int N) {
   feat.p = compute_power(x_windowed, N) - w_p + 10*log10(N);
   feat.am = compute_am(x, N);
 
+  //Debug print
   //printf("Power: %0.6f\nAmplitude: %0.6f\nZCR: %0.6f\n\n", feat.p, feat.p, feat.am);
 
   return feat;
 }
 
-
-
 /*
    TODO: Init the values of vad_data
- */
+   QUE EM DE FER AQUI?
+*/
 
 
 VAD_DATA * vad_open(float rate) {
@@ -76,8 +60,9 @@ VAD_DATA * vad_open(float rate) {
 
 VAD_STATE vad_close(VAD_DATA *vad_data) {
   VAD_STATE state = ST_SILENCE;
-  /* TODO: decide what to do with the last undecided frames */
-
+  /* TODO: decide what to do with the last undecided frames 
+  HEM DE PENSAR ALGO PER A FICAR A AQUESTA FUNCIO
+  */
   free(vad_data);
   return state;
 }
@@ -87,18 +72,8 @@ unsigned int vad_frame_size(VAD_DATA *vad_data) {
 }
 
 
-
-/*
-   TODO: Implement the Voice Activity Detection
-   using a Finite State Automata
-*/
-
 VAD_STATE vad(VAD_DATA *vad_data, float *x, double *silence_time, int count, float *t_up, float *t_down) {
 
-  /* TODO
-     You can change this, using your own features,
-     program finite state automaton, define conditions, etc.
-  */
   double window_time=0.01; //160 samples / 16khz
   // int POWER_HIGH = 3;
   // int POWER_LOW = -1;
@@ -112,34 +87,37 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x, double *silence_time, int count, flo
   //printf("power: %0.3f\n", f.p);
 
   switch (vad_data->state) {
-  case ST_INIT:
-    vad_data->state = ST_SILENCE;
-    break;
+    case ST_INIT:
+      //Iniciem estat a silenci
+      vad_data->state = ST_SILENCE;
+      break;
 
-  case ST_SILENCE:
-  //*silence_time=window_time+(*silence_time);
-  //printf("%f\n", *silence_time);
-    if (f.p > POWER_HIGH)
-      //*silence_time=0;
-      vad_data->state = ST_VOICE;
-    break;
+    case ST_SILENCE:
+      //Passem a só 
+      if (f.p > POWER_HIGH)
+        vad_data->state = ST_VOICE;
+      break;
 
-  case ST_VOICE:
-    if (f.p < POWER_LOW){
-      *silence_time=window_time+(*silence_time);
-      //printf("%f\n", *silence_time);
-      if (*silence_time>MAX_SILENCE_TIME){
-        vad_data->state = ST_SILENCE;
-        *silence_time=0;
+    case ST_VOICE:
+      //Ús de finestra temporal per a canviar d'estat
+      if (f.p < POWER_LOW){
+        //Càlcul del temps en silènci
+        *silence_time = *silence_time + window_time;
+        if (*silence_time>MAX_SILENCE_TIME){
+          //Canvi d'estat 
+          vad_data->state = ST_SILENCE;
+          *silence_time=0;
+        }
       }
-    }
-    else if (f.p > POWER_HIGH)
-      *silence_time=0;
-  break;
+      else if (f.p > POWER_HIGH)
+        // Posem a zero si hi ha só
+        *silence_time=0;
+      break;
   }
 
   if (vad_data->state == ST_SILENCE ||
       vad_data->state == ST_VOICE)
+    //En cas que tinguém estat definit
     return vad_data->state;
   else
     return ST_UNDEF;

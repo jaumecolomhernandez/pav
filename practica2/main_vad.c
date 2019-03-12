@@ -25,21 +25,6 @@ int main(int argc, const char *argv[]) {
   float frame_duration;  /* in seconds */
   float t, last_t;
 
-  //OWN VARIABLES
-  //It is the time we have been in silence
-  double silence_time = 0;
-  // It is is the trace analysing
-  int count = 0;
-  //Vector amb la informacio de les tres primeres trames del audio
-  Features feats[3];
-  // Potencia mitjana de les tres primeres trames
-  float mean_power=0;
-  //Threshold up
-  float t_up;
-  //Threshold down
-  float t_down;
-  
-
   if (argc != 3 && argc != 4) {
     fprintf(stderr, "Usage: %s input_file.wav output.vad [output_file.wav]\n",
             argv[0]);
@@ -85,54 +70,69 @@ int main(int argc, const char *argv[]) {
   t = last_t = 0;
   last_state = ST_UNDEF;
 
+  //OWN VARIABLES
+  //It is the time we have been in silence
+  double silence_time = 0;
+  // It is is the trace analysing
+  int count = 0;
+  //Vector amb la informacio de les tres primeres trames del audio
+  Features feats[3];
+  // Potencia mitjana de les tres primeres trames
+  float mean_power=0;
+  //Threshold up
+  float t_up;
+  //Threshold down
+  float t_down;
+
   while(1) { /* For each frame ... */
     n_read = sf_read_float(sndfile_in, buffer, frame_size);
 
-    /* End loop when file has finished (or there is an error) */
+    // Tanquem el fitxer si arribem al final
     if  (n_read != frame_size)
       break;
 
-    //AQUI COMENÇA EL PROCÉS D'ÀNALISIS EXCLUINT LES PRIMERES MOSTREWS
+    //AQU
     if (count < 3){
+      //Cas especial en les 3 primeres mostres
       state = ST_SILENCE;
-      //Calcular potència INICIAL buffer
       feats[count] = compute_features(buffer, vad_data->frame_length);
-
     }else {
       if(count == 3){
-        //CALULAR ELS THRESHOLDS
+        //Càlcul dels thresholds
         mean_power=(feats[0].p+feats[1].p+feats[2].p)/3;
         printf("%f", mean_power);
-        t_up = mean_power + 10;
+        t_up = mean_power + 10; // +10 i +8 són els valors òptims que hem trovat
         t_down = mean_power + 8;
-
       }
-      //CALCULEM EL VAD DE FORMA TRADICIONAL
+      //Càclul del vad de forma tradicional
       state = vad(vad_data, buffer, &silence_time, count, &t_up, &t_down);
     }
 
     count = count + 1;
 
+    //COPIAR DADES A UN FITXER .WAV
     if (sndfile_out != 0) {
-      /* TODO: copy all the samples into sndfile_out */
-      /*CONVERT DATA TO SHORT TYPE */
+      //Convert data to short data type
       buffer_short = (short *) malloc(frame_size * sizeof(float));
       float  norm_factor = (short) 0x1000;
       for(i=0; i<frame_size; i++){
         buffer_short[i] = (short) buffer[i]*300;
       }
+      /*TODO: MIRAR QUE FALTA FER PER A QUE FUNCIONI BÉ
+      Actualment exporta un fitxer .wav però que és sent malament,
+      he provat de posar el normalization factor però tampoc ho arregla*/
       sf_write_short(sndfile_out, buffer_short, frame_size);
     }
 
     if (verbose & DEBUG_VAD)
       vad_show_state(vad_data, stdout);
 
-
+    //COPIAR DADES DE UN FITXER .WAV I ESCRIURE ZEROS ON HI HA SILENCI EXTRA
     if (sndfile_out != 0) {
-      /* TODO: go back and write zeros if silence EXTRA */
 
     }
 
+    //ESCRIPTURA DEL FITXER EN CAS QUE CANVÏI L'ESTAT
     if (state != last_state) {
       if (t != last_t)
         fprintf(vadfile, "%f\t%f\t%s\n", last_t, t, state2str(last_state));
@@ -142,6 +142,7 @@ int main(int argc, const char *argv[]) {
     t += frame_duration;
   }
 
+  //TODO: MIRAR LA FUNCIÓ VAD_CLOSE
   state = vad_close(vad_data);
   if (t != last_t)
     fprintf(vadfile, "%f\t%f\t%s\n", last_t, t, state2str(state));
