@@ -10,7 +10,7 @@ const char *state2str(VAD_STATE st);
 
 /* TODO: add the variables needed to control the VAD
    (counts, thresholds, etc.) */
-double silence_time;
+
 
 typedef struct {
   VAD_STATE state;
@@ -18,6 +18,15 @@ typedef struct {
   unsigned int frame_length;
   float last_feature; /* for debuggin purposes */
 } VAD_DATA;
+
+typedef struct {
+  float zcr;
+  float p;
+  float am;
+} Features;
+
+//This function computes the above struct
+Features compute_features(float *x, int N);
 
 /* Call this function before using VAD:
    It should return allocated and initialized values of vad_data
@@ -38,7 +47,7 @@ unsigned int vad_frame_size(VAD_DATA *);
 
     x: input frame
        It is assumed the length is frame_length */
-VAD_STATE vad(VAD_DATA *vad_data, float *x, double *silence_time);
+VAD_STATE vad(VAD_DATA *vad_data, float *x, double *silence_time, int count, float *t_up, float *t_down);
 
 /* Free memory
    Returns the state of the last (undecided) states. */

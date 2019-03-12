@@ -10,7 +10,7 @@ int main(int argc, const char *argv[]) {
   /* To show internal state of vad
      verbose = DEBUG_VAD;
   */
-  double silence_time=0;
+  
   SNDFILE *sndfile_in, *sndfile_out = 0;
   SF_INFO sf_info;
   FILE *vadfile;
@@ -23,6 +23,21 @@ int main(int argc, const char *argv[]) {
   int frame_size;        /* in samples */
   float frame_duration;  /* in seconds */
   float t, last_t;
+
+  //OWN VARIABLES
+  //It is the time we have been in silence
+  double silence_time = 0;
+  // It is is the trace analysing
+  int count = 0;
+  //Vector amb la informacio de les tres primeres trames del audio
+  Features feats[3];
+  // Potencia mitjana de les tres primeres trames
+  float mean_power=0;
+  //Threshold up
+  float t_up;
+  //Threshold down
+  float t_down;
+  
 
   if (argc != 3 && argc != 4) {
     fprintf(stderr, "Usage: %s input_file.wav output.vad [output_file.wav]\n",
@@ -76,12 +91,32 @@ int main(int argc, const char *argv[]) {
     if  (n_read != frame_size)
       break;
 
+    //AQUI COMENÇA EL PROCÉS D'ÀNALISIS EXCLUINT LES PRIMERES MOSTREWS
+    if (count < 3){
+      state = ST_SILENCE;
+      //Calcular potència INICIAL buffer
+      feats[count] = compute_features(buffer, vad_data->frame_length);
+
+    }else {
+      if(count == 3){
+        //CALULAR ELS THRESHOLDS
+        mean_power=(feats[0].p+feats[1].p+feats[2].p)/3;
+        printf("%f", mean_power);
+        t_up = mean_power + 10;
+        t_down = mean_power + 8;
+
+      }
+      //CALCULEM EL VAD DE FORMA TRADICIONAL
+      state = vad(vad_data, buffer, &silence_time, count, &t_up, &t_down);
+    }
+
+    count = count + 1;
+
     if (sndfile_out != 0) {
       /* TODO: copy all the samples into sndfile_out */
 
     }
 
-    state = vad(vad_data, buffer, &silence_time);
     if (verbose & DEBUG_VAD)
       vad_show_state(vad_data, stdout);
 
