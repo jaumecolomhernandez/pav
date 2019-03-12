@@ -19,12 +19,12 @@ const char *state2str(VAD_STATE st) {
   return state_str[st];
 }
 
-/* Define a datatype with interesting features */
-typedef struct {
-  float zcr;
-  float p;
-  float am;
-} Features;
+// /* Define a datatype with interesting features */
+// typedef struct {
+//   float zcr;
+//   float p;
+//   float am;
+// } Features;
 
 /* TODO: Delete and use your own features! */
 //const float *x ?????
@@ -93,19 +93,21 @@ unsigned int vad_frame_size(VAD_DATA *vad_data) {
    using a Finite State Automata
 */
 
-VAD_STATE vad(VAD_DATA *vad_data, float *x) {
+VAD_STATE vad(VAD_DATA *vad_data, float *x, double *silence_time, int count, float *t_up, float *t_down) {
 
   /* TODO
      You can change this, using your own features,
      program finite state automaton, define conditions, etc.
   */
-
-  float POWER_HIGH = 1;
-  float POWER_LOW = -1;
+  double window_time=0.01; //160 samples / 16khz
+  // int POWER_HIGH = 3;
+  // int POWER_LOW = -1;
+  float POWER_HIGH = *t_up;
+  float POWER_LOW = *t_down; 
+  float MAX_SILENCE_TIME = 0.35;
 
   Features f = compute_features(x, vad_data->frame_length);
   vad_data->last_feature = f.p; /* save feature, in case you want to show */
-
 
   //printf("power: %0.3f\n", f.p);
 
@@ -115,14 +117,25 @@ VAD_STATE vad(VAD_DATA *vad_data, float *x) {
     break;
 
   case ST_SILENCE:
+  //*silence_time=window_time+(*silence_time);
+  //printf("%f\n", *silence_time);
     if (f.p > POWER_HIGH)
+      //*silence_time=0;
       vad_data->state = ST_VOICE;
     break;
 
   case ST_VOICE:
-    if (f.p < POWER_LOW)
-      vad_data->state = ST_SILENCE;
-    break;
+    if (f.p < POWER_LOW){
+      *silence_time=window_time+(*silence_time);
+      //printf("%f\n", *silence_time);
+      if (*silence_time>MAX_SILENCE_TIME){
+        vad_data->state = ST_SILENCE;
+        *silence_time=0;
+      }
+    }
+    else if (f.p > POWER_HIGH)
+      *silence_time=0;
+  break;
   }
 
   if (vad_data->state == ST_SILENCE ||
