@@ -17,6 +17,7 @@ for root, dirs, files in os.walk("./audios"):
             
             with open(str_file, "w") as f:
                 f.write(newText)
+                
         if file.endswith(".lab"):
             with open(str_file) as f:
                 newText=f.read().replace('v', 'V')
