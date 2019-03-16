@@ -6,10 +6,7 @@
 #define DEBUG_VAD 0x1
 
 int main(int argc, const char *argv[]) {
-  int verbose = 0;
-  /* To show internal state of vad
-     verbose = DEBUG_VAD;
-  */
+  int verbose = 0; //verbose bool
   
   SNDFILE *sndfile_in, *sndfile_out = 0;
   SF_INFO sf_info;
@@ -83,6 +80,8 @@ int main(int argc, const char *argv[]) {
   float t_up;
   //Threshold down
   float t_down;
+  //System variable to define write behavior
+  int silence = 1;
 
   while(1) { /* For each frame ... */
     n_read = sf_read_float(sndfile_in, buffer, frame_size);
@@ -91,46 +90,49 @@ int main(int argc, const char *argv[]) {
     if  (n_read != frame_size)
       break;
 
-    //AQU
+    //CÀLCUL DELS VALORS DE TRESHOLD EN FUNCIÓ DE LES 3 PRIMERES MOSTRES
     if (count < 3){
       //Cas especial en les 3 primeres mostres
+      //Guardem els 3 primers structs Features
       state = ST_SILENCE;
       feats[count] = compute_features(buffer, vad_data->frame_length);
     }else {
       if(count == 3){
         //Càlcul dels thresholds
+        //Càlculem la potència mitjana i els thresholds 
+        //sumant 
         mean_power=(feats[0].p+feats[1].p+feats[2].p)/3;
         printf("%f", mean_power);
         t_up = mean_power + 10; // +10 i +8 són els valors òptims que hem trovat
         t_down = mean_power + 8;
       }
       //Càclul del vad de forma tradicional
-      state = vad(vad_data, buffer, &silence_time, count, &t_up, &t_down);
+      state = vad(vad_data, buffer, &silence_time, &t_up, &t_down);
     }
 
     count = count + 1;
 
     //COPIAR DADES A UN FITXER .WAV
     if (sndfile_out != 0) {
-      //Convert data to short data type
-      buffer_short = (short *) malloc(frame_size * sizeof(float));
-      float  norm_factor = (short) 0x1000;
-      for(i=0; i<frame_size; i++){
-        buffer_short[i] = (short) buffer[i]*300;
+      //Hem definit la variable silence per a escollir si copiem el fitxer original
+      //o si posem silenci quan no hi ha veu
+      if (silence == 1){
+        if (state == 2){
+          // state = 2 és l'estat amb veu
+          sf_write_float(sndfile_out, buffer, frame_size);
+        }else{
+          // buffer_zeros és un array que va inicialitzat amb zeros
+          sf_write_float(sndfile_out, buffer_zeros, frame_size);
+        }
+      }else{
+        //Còpia del fitxer sense modificar
+        sf_write_float(sndfile_out, buffer, frame_size);
       }
-      /*TODO: MIRAR QUE FALTA FER PER A QUE FUNCIONI BÉ
-      Actualment exporta un fitxer .wav però que és sent malament,
-      he provat de posar el normalization factor però tampoc ho arregla*/
-      sf_write_short(sndfile_out, buffer_short, frame_size);
+      
     }
 
     if (verbose & DEBUG_VAD)
       vad_show_state(vad_data, stdout);
-
-    //COPIAR DADES DE UN FITXER .WAV I ESCRIURE ZEROS ON HI HA SILENCI EXTRA
-    if (sndfile_out != 0) {
-
-    }
 
     //ESCRIPTURA DEL FITXER EN CAS QUE CANVÏI L'ESTAT
     if (state != last_state) {
