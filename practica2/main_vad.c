@@ -7,7 +7,7 @@
 
 int main(int argc, const char *argv[]) {
   int verbose = 0; //verbose bool
-  
+
   SNDFILE *sndfile_in, *sndfile_out = 0;
   SF_INFO sf_info;
   FILE *vadfile;
@@ -72,9 +72,9 @@ int main(int argc, const char *argv[]) {
   double silence_time = 0;
   // It is is the trace analysing
   int count = 0;
-  //Vector amb la informacio de les tres primeres trames del audio
+  //Vector with information about three first blocks of audio
   Features feats[3];
-  // Potencia mitjana de les tres primeres trames
+  //Mean power of first three blocks
   float mean_power=0;
   //Threshold up
   float t_up;
@@ -86,49 +86,47 @@ int main(int argc, const char *argv[]) {
   while(1) { /* For each frame ... */
     n_read = sf_read_float(sndfile_in, buffer, frame_size);
 
-    // Tanquem el fitxer si arribem al final
+    // We close the file if it's finished
     if  (n_read != frame_size)
       break;
 
-    //CÀLCUL DELS VALORS DE TRESHOLD EN FUNCIÓ DE LES 3 PRIMERES MOSTRES
+    // Calculate Threshold value depending of first three blocks
     if (count < 3){
-      //Cas especial en les 3 primeres mostres
-      //Guardem els 3 primers structs Features
+      //Special case on first 3 blocks Cas especial en les 3 primeres mostres
+      //We save first three structs Features
       state = ST_SILENCE;
       feats[count] = compute_features(buffer, vad_data->frame_length);
     }else {
       if(count == 3){
-        //Càlcul dels thresholds
-        //Càlculem la potència mitjana i els thresholds 
-        //sumant 
+        //Calculate thresholds
+        //Calculate mean power and thresholds
         mean_power=(feats[0].p+feats[1].p+feats[2].p)/3;
         printf("%f", mean_power);
-        t_up = mean_power + 10; // +10 i +8 són els valors òptims que hem trovat
+        t_up = mean_power + 10; // +10 and +8 are the optimals values we have found
         t_down = mean_power + 8;
       }
-      //Càclul del vad de forma tradicional
+      //Calculate vad traditional way
       state = vad(vad_data, buffer, &silence_time, &t_up, &t_down);
     }
 
     count = count + 1;
 
-    //COPIAR DADES A UN FITXER .WAV
+    //Copy data into a .wav file
     if (sndfile_out != 0) {
-      //Hem definit la variable silence per a escollir si copiem el fitxer original
-      //o si posem silenci quan no hi ha veu
+      //We have defined the "silence" variable to choose if we want to copy the
+      //original file or put silence when we have detected there isn't voice
       if (silence == 1){
-        if (state == 2){
-          // state = 2 és l'estat amb veu
+        if (state == ST_VOICE){
           sf_write_float(sndfile_out, buffer, frame_size);
         }else{
-          // buffer_zeros és un array que va inicialitzat amb zeros
+          // buffer_zeros it's and array full of zeros
           sf_write_float(sndfile_out, buffer_zeros, frame_size);
         }
       }else{
-        //Còpia del fitxer sense modificar
+        //Copy from the original file whithput modifications
         sf_write_float(sndfile_out, buffer, frame_size);
       }
-      
+
     }
 
     if (verbose & DEBUG_VAD)
