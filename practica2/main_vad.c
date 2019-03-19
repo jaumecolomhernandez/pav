@@ -72,9 +72,9 @@ int main(int argc, const char *argv[]) {
   double silence_time = 0;
   // It is is the trace analysing
   int count = 0;
-  //Vector with information about three first blocks of audio
+  //Information vector of three first traces of audio
   Features feats[3];
-  //Mean power of first three blocks
+  //Mean power of the first three traces
   float mean_power=0;
   //Threshold up
   float t_up;
@@ -86,32 +86,32 @@ int main(int argc, const char *argv[]) {
   while(1) { /* For each frame ... */
     n_read = sf_read_float(sndfile_in, buffer, frame_size);
 
-    // We close the file if it's finished
+    // Closes the file if it's finished
     if  (n_read != frame_size)
       break;
 
-    // Calculate Threshold value depending of first three blocks
+    //CALCULATES THRESHOLD VALUE DEPENDING ON THE FIRST THREE TRACES
     if (count < 3){
-      //Special case on first 3 blocks Cas especial en les 3 primeres mostres
-      //We save first three structs Features
+      //Special case on first 3 blocks
+      //Saves the first three Features structs
       state = ST_SILENCE;
       feats[count] = compute_features(buffer, vad_data->frame_length);
     }else {
       if(count == 3){
-        //Calculate thresholds
-        //Calculate mean power and thresholds
+        //Calculates thresholds
+        //Calculates mean power and thresholds
         mean_power=(feats[0].p+feats[1].p+feats[2].p)/3;
         printf("%f", mean_power);
         t_up = mean_power + 10; // +10 and +8 are the optimals values we have found
         t_down = mean_power + 8;
       }
-      //Calculate vad traditional way
+      //Calculates vad traditional way
       state = vad(vad_data, buffer, &silence_time, &t_up, &t_down);
     }
 
     count = count + 1;
 
-    //Copy data into a .wav file
+    //COPY DATA INTO A .WAV FILE
     if (sndfile_out != 0) {
       //We have defined the "silence" variable to choose if we want to copy the
       //original file or put silence when we have detected there isn't voice
@@ -123,7 +123,7 @@ int main(int argc, const char *argv[]) {
           sf_write_float(sndfile_out, buffer_zeros, frame_size);
         }
       }else{
-        //Copy from the original file whithput modifications
+        //Copy from the original file whithout modifications
         sf_write_float(sndfile_out, buffer, frame_size);
       }
 
