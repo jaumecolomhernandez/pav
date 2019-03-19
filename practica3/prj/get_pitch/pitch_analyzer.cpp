@@ -22,10 +22,16 @@ namespace upc {
 
     switch (win_type) {
     case HAMMING:
-      // TODO: implement the hamming window
+      // Hamming window
+      for (int i=0; i<frameLen; i++){
+        window[i] = 0.54 - 0.46*cos(2*M_PI*(i)/(frameLen-1));
+      }
       break;
     case RECT:
+      window.assign(frameLen, 1);
+      break;
     default:
+      //Also a rectangular window
       window.assign(frameLen, 1);
     }
   }
