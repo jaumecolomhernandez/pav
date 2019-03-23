@@ -109,7 +109,7 @@ int main(int argc, const char *argv[]) {
 
     //Change extension of ref file to .f0
     string ftest(argv[i]);
-    string::size_type pos = ftest.rfind('.');
+    string::size_type pos = ftest.rfind('.f0');
     if (pos != string::npos)
       ftest.erase(pos);    
     ftest += ".f0";

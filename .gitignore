@@ -6,3 +6,5 @@
 *.f0ref
 *.d
 /practica3/prj/html
+/practica3/bin/
+/practica3/lib/
