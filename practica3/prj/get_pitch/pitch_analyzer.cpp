@@ -87,12 +87,6 @@ bool PitchAnalyzer::unvoiced(float pot, float r1norm, float rmaxnorm) const
     //printf("%f\t%f\t%f\n", pot, r1norm, rmaxnorm);
   }
 
-  /*
-    if (pot>-35){
-      return false;
-    }else{
-      return true;
-    }*/
   return false;
 }
 
@@ -142,6 +136,7 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
   float frequency = 1.0 / (float)index * (float)samplingFreq;
   float pot = 10 * log10(r[0]);
 
+  //MIRAR QUE POT PASSAR PER LA FREQÜENCIA SURTI MALAMENT!
   printf("%f\n",frequency);
 
   //Comprovamos que sea un tramo con voz
