@@ -103,20 +103,20 @@ int main(int argc, const char *argv[]) {
   for (int i=1; i<argc; ++i) {
     vector<float> f0ref, f0test;
     if (read_vector(argv[i], f0ref)) {
-      cerr << "Error reading ref file: " << argv[1] << endl;
+      cerr << "Error reading ref 1 file: " << argv[1] << endl;
       return 2;
     }
 
     //Change extension of ref file to .f0
-    string ftest(argv[i]);
-    string::size_type pos = ftest.rfind('.f0');
-    if (pos != string::npos)
-      ftest.erase(pos);    
-    ftest += ".f0";
-    if (ftest == argv[i]) ftest += "test";
+    string ftest = argv[i];
+    ftest.resize(ftest.size() - 5);
+    ftest += "f0";
+    //if (ftest == argv[i]) ftest += "test";
 
+    
     if (read_vector(ftest, f0test)) {
-      cerr << "Error reading test file: " << ftest << endl;
+    //if (read_vector(argv[2], f0test)) {
+      cerr << "Error reading test 2 file: " << ftest << endl;
       return 3;
     }
     

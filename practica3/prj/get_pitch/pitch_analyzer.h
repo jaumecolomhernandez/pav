@@ -1,6 +1,7 @@
 #ifndef PITCH_ANALYZER_H
 #define PITCH_ANALYZER_H
 
+#include <stdio.h>
 #include <vector>
 #include <algorithm>
 
@@ -13,11 +14,11 @@ namespace upc {
     No pre-processing or post-processing has been included
   */
 
-
   class PitchAnalyzer {
   public:
     enum Window {RECT, HAMMING}; ///Window type
     void set_window(Window type); ///pre-compute window
+    //POSAR AQUI EL PUNTER AL FITXER?
 
   private:
 
@@ -26,7 +27,8 @@ namespace upc {
       samplingFreq, ///sampling rate (ins samples). Has to be set in the constructor call
       npitch_min, /// min. value of pitch period, in samples
       npitch_max; /// max. value of pitch period, in samples
-
+    FILE *fpr;
+    
     void autocorrelation(const std::vector<float> &x, std::vector<float> &r) const; ///compute correlation from lag=0 to r.size()
     float compute_pitch(std::vector<float> & x) const; ///Returns the pitch (in Hz) of input frame x
 

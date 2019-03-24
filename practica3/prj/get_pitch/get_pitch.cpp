@@ -36,13 +36,16 @@ int main(int argc, const char *argv[]) {
     return -2;
   }
 
+  FILE *filePointer;
+
   int n_len = rate * FRAME_LEN;
   int n_shift = rate * FRAME_SHIFT;
 
   ///Define analyzer
   PitchAnalyzer analyzer(n_len, rate, PitchAnalyzer::HAMMING, 50, 500);
 
-  ///You can preprocess the input data x ....
+  //PREPROCESADO - IMPLEMENTAR CENTER CLIPPING AQUÍ
+  //TODO: IMPLEMENTAR EN EL LAB
   
   ///Iterate for each frame and save values in f0 vector
   vector<float>::iterator iX;
@@ -52,7 +55,8 @@ int main(int argc, const char *argv[]) {
     f0.push_back(f);
   }
 
-  //You can post-process the f0 values
+  //POSTPROCESADO - FILTRO DE MEDIANA
+  //TODO: IMPLEMENTAR EN EL LAB
 
   ///Write f0 contour into the output file
   ofstream os(argv[2]);

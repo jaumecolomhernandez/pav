@@ -5,6 +5,10 @@
 *.lab
 *.f0ref
 *.d
-/practica3/prj/html
-/practica3/bin/
-/practica3/lib/
+*.f0ref
+*.f0
+*.a
+practica3/prj/html
+practica3/bin/**
+practica3/lib/
+practica3/audios
