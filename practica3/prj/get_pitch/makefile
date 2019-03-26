@@ -35,7 +35,7 @@ PROG2 := $(BIN_DIR)/pitch_evaluate
 CPPSRC2  := pitch_evaluate.cpp
 
 # TO DO: Add the requiered libraries using the -l form (-lmy -> libmy.a)
-LDLIBS2 :=
+LDLIBS2 := -lpav
 
 #-----------------------------------------------------------------
 all: $(PROG1) $(PROG2)

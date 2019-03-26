@@ -1,6 +1,7 @@
 #include <iostream>
 #include <math.h>
 #include "pitch_analyzer.h"
+#include "pav_analysis.h"
 using namespace std;
 
 namespace upc
@@ -86,8 +87,11 @@ bool PitchAnalyzer::unvoiced(float pot, float r1norm, float rmaxnorm) const
     //PENSAR MANERA DE PASAR UN PUNTERO POR REFERENCIA!
     //printf("%f\t%f\t%f\n", pot, r1norm, rmaxnorm);
   }
-
-  return false;
+  if (pot>-40.0 && r1norm>0.5){
+    return false;
+  }else{
+    return true;
+  }
 }
 
 float PitchAnalyzer::compute_pitch(vector<float> &x) const
@@ -123,8 +127,10 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
     if (firstNegative)
     {
       //Després si és un màxim
-      if (r[i] > maxVal)
+      if (r[i] > maxVal){
         index = i;
+        maxVal = r[i];
+      }
     }
     else if (r[i] < 0)
     { //En cas que sigui menor que zero
@@ -137,7 +143,7 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
   float pot = 10 * log10(r[0]);
 
   //MIRAR QUE POT PASSAR PER LA FREQÜENCIA SURTI MALAMENT!
-  printf("%f\n",frequency);
+  //printf("%f\n",frequency);
 
   //Comprovamos que sea un tramo con voz
   //Sino no se puede sacar el pitch
@@ -146,6 +152,12 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
     if (r[0] > 0.0F)
       cout << pot << '\t' << r[1] / r[0] << '\t' << r[index] / r[0] << endl;
   #endif
+
+  //#if 1
+    //int zcr = compute_zcr(&x[0],frameLen);
+    //if (r[0] > 0.0F)
+    //  cout << zcr << endl;
+  //#endif
 
   if (unvoiced(pot, r[1] / r[0], r[index] / r[0]) or index == 0)
     return 0;

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <vector>
 #include <algorithm>
+#include "pav_analysis.h"
 
 namespace upc {
   const float MIN_F0=20.0F;
