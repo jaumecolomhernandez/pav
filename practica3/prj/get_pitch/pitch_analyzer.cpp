@@ -81,13 +81,7 @@ bool PitchAnalyzer::unvoiced(float pot, float r1norm, float rmaxnorm) const
 
   bool debug = true; //Flag to print data to files for posterior use in wavesurfer
 
-  if (debug)
-  {
-    //Prints data to file
-    //PENSAR MANERA DE PASAR UN PUNTERO POR REFERENCIA!
-    //printf("%f\t%f\t%f\n", pot, r1norm, rmaxnorm);
-  }
-  if (pot>-40.0 && r1norm>0.5){
+  if (pot>-20.0 && r1norm>0.75){
     return false;
   }else{
     return true;
