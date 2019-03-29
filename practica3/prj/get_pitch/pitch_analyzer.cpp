@@ -81,7 +81,7 @@ bool PitchAnalyzer::unvoiced(float pot, float r1norm, float rmaxnorm) const
 
   bool debug = true; //Flag to print data to files for posterior use in wavesurfer
 
-  if (pot>-20.0 && r1norm>0.75){
+  if (pot>-20.00 && r1norm>0.75){
     return false;
   }else{
     return true;
