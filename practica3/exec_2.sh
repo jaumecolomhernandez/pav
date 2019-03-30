@@ -7,4 +7,4 @@ make -C ./prj all
 #Eval
 ./bin/release/pitch_evaluate ./exports/rl005.f0ref
 #Evaluation
-python plot_results.py
+#python plot_results.py

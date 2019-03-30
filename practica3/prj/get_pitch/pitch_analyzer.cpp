@@ -1,6 +1,7 @@
 #include <iostream>
 #include <math.h>
 #include "pitch_analyzer.h"
+#include "fft.h"
 #include "pav_analysis.h"
 using namespace std;
 
@@ -13,6 +14,8 @@ void PitchAnalyzer::autocorrelation(const vector<float> &x, vector<float> &r) co
   //Returns a FrameLen length vector
   short size = r.size();
 
+  //printf("%d aa\n",size);
+
   float sum;
   int i, j;
 
@@ -24,17 +27,19 @@ void PitchAnalyzer::autocorrelation(const vector<float> &x, vector<float> &r) co
     int n_size = size - i;
     for (j = 0; j < n_size; j++)
     { //for each calculate sum
-      sum = sum + x[j] * x[j+i];
+      sum = sum + x[j] * x[j + i];
     }
-    if(normalization){
-      r[i] = sum*1000.0/n_size;
-    }else{
+    if (normalization)
+    {
+      r[i] = sum * 1000.0 / n_size;
+    }
+    else
+    {
       r[i] = sum;
     }
     //printf("%f ",sum);
   }
   printf("\n\n");
-  
 
   if (r[0] == 0.0F) //to avoid log() and divide zero
     r[0] = 1e-10;
@@ -91,9 +96,12 @@ bool PitchAnalyzer::unvoiced(float pot, float r1norm, float rmaxnorm) const
 
   bool debug = true; //Flag to print data to files for posterior use in wavesurfer
 
-  if (pot>-15.00 && r1norm>0.70){
+  if (pot > -15.00 && r1norm > 0.70)
+  {
     return false;
-  }else{
+  }
+  else
+  {
     return true;
   }
 }
@@ -104,15 +112,15 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
   //We pass a float vector with the trace
 
   //If we are at the end of the file end,
-  if (x.size() != frameLen){
+  if (x.size() != frameLen)
+  {
     return -1.0F;
   }
-    
 
   //WINDOW INPUT FRAME
   //Aplica la finestra; PREGUNTAR SOBRE EL SOLAPAMENT DE FINESTRA PQ EN AQUEST CAS NO N'HI HA
   for (unsigned int i = 0; i < x.size(); ++i)
-    x[i] = x[i]*window[i];
+    x[i] = x[i] * window[i];
 
   //COMPUTES CORRELATION
   //Ens retorna un vector amb les autocorrelacions de llargada frameLen
@@ -133,7 +141,8 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
     if (firstNegative)
     {
       //Després si és un màxim
-      if (r[i] > maxVal){
+      if (r[i] > maxVal)
+      {
         index = i;
         maxVal = r[i];
       }
@@ -144,58 +153,48 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
     }
   }
 
-  printf("\n%d\n",index);
+  //CÀLCUL DEL CEPSTRUM
+  vector<float> c(npitch_max);
+  cepstrum(x, c);
 
+  //Càlcul del valor màxim del Cepstrum
+  //COM ES PASSA DE VALOR MÀXIM DEL CEPSTRUM A FREQÜENCIA?
+
+  float maxVal2 = -1000.0; //Inicialitzem a -1000, suposem que l'autocorr max sempre > 0 FALTA PENSAR ALGO MÉS ELEGANT
+  int index2 = 0;
+
+  for (int i = 0; i < 256 - 1; i++)
+  {
+    //Debug - Print dels valors del cepstrum
+    cout << c[i] << " ";
+
+    //Comprovem que sigui major que el anterior màxim
+    if (c[i] > maxVal2)
+    {
+      index2 = i;
+      maxVal2 = c[i];
+    }
+  }
+
+  //Debug - Print del valor màxim de l'autocorrelació i del cepstrum
+  printf("\n%d-%d\n", index, index2);
 
   float frequency = 1.0 / (float)index * (float)samplingFreq;
   float pot = 10 * log10(r[0]);
 
-  //MIRAR QUE POT PASSAR PER LA FREQÜENCIA SURTI MALAMENT!
-  //printf("%f\n",frequency);
+//Comprovamos que sea un tramo con voz
+//Sino no se puede sacar el pitch
 
-  //Comprovamos que sea un tramo con voz
-  //Sino no se puede sacar el pitch
-
-  #if 0
-    if (r[0] > 0.0F)
-      cout << pot << '\t' << r[1] / r[0] << '\t' << r[index] / r[0] << endl;
-  #endif
-
-  //#if 1
-    //int zcr = compute_zcr(&x[0],frameLen);
-    //if (r[0] > 0.0F)
-    //  cout << zcr << endl;
-  //#endif
+//Debug - Printeja potencia, r1/pot i rmax/pot
+#if 0
+      if (r[0] > 0.0F)
+        cout << pot << '\t' << r[1] / r[0] << '\t' << r[index] / r[0] << endl;
+#endif
 
   if (unvoiced(pot, r[1] / r[0], r[index] / r[0]) or index == 0)
     return 0.0;
   else
     return frequency;
-
-  //DE AQUÍ PARA ABAJO NO SE QUE HACE NADA
-
-  // ESTE ITERADOR PARA QUE SE USA?
-  //vector<float>::const_iterator iR = r.begin(), iRMax = iR;
-
-  /* QUE HACE ESTO?
-    unsigned int lag = 0;
-
-    if (iRMax != r.end()) //normal case
-      lag = iRMax - r.begin();
-    */
-
-  //float pot = 10 * log10(r[0]);
-
-  //You can print these (and other) features, look at them using wavesurfer
-  //Based on that, implement a rule for unvoiced
-  //change to #if 1 and compile
-
-  /*
-    if (unvoiced(pot, r[1]/r[0], r[lag]/r[0]) or lag == 0)
-      return 0;
-    else
-      return (float) samplingFreq/(float) lag;
-    */
 }
 
 } // namespace upc
