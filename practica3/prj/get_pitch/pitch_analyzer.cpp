@@ -16,15 +16,25 @@ void PitchAnalyzer::autocorrelation(const vector<float> &x, vector<float> &r) co
   float sum;
   int i, j;
 
+  bool normalization = true;
+
   for (i = 0; i < size; ++i)
   {
-    sum = 0;
-    for (j = 0; j < size - i; j++)
+    sum = 0.0;
+    int n_size = size - i;
+    for (j = 0; j < n_size; j++)
     { //for each calculate sum
-      sum += x[j] * x[j + i];
+      sum = sum + x[j] * x[j+i];
     }
-    r[i] = sum;
+    if(normalization){
+      r[i] = sum*1000.0/n_size;
+    }else{
+      r[i] = sum;
+    }
+    //printf("%f ",sum);
   }
+  printf("\n\n");
+  
 
   if (r[0] == 0.0F) //to avoid log() and divide zero
     r[0] = 1e-10;
@@ -81,7 +91,7 @@ bool PitchAnalyzer::unvoiced(float pot, float r1norm, float rmaxnorm) const
 
   bool debug = true; //Flag to print data to files for posterior use in wavesurfer
 
-  if (pot>-20.00 && r1norm>0.75){
+  if (pot>-15.00 && r1norm>0.70){
     return false;
   }else{
     return true;
@@ -94,13 +104,15 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
   //We pass a float vector with the trace
 
   //If we are at the end of the file end,
-  if (x.size() != frameLen)
+  if (x.size() != frameLen){
     return -1.0F;
+  }
+    
 
   //WINDOW INPUT FRAME
   //Aplica la finestra; PREGUNTAR SOBRE EL SOLAPAMENT DE FINESTRA PQ EN AQUEST CAS NO N'HI HA
   for (unsigned int i = 0; i < x.size(); ++i)
-    x[i] *= window[i];
+    x[i] = x[i]*window[i];
 
   //COMPUTES CORRELATION
   //Ens retorna un vector amb les autocorrelacions de llargada frameLen
@@ -112,13 +124,12 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
   //El lag del màxim es troba en mostra*samplingFrequency i per a treure la
   //frèquencia fem el invers.
   bool firstNegative = false;
-  float maxVal = 0; //Inicialitzem a zero, suposem que l'autocorr max sempre > 0
+  float maxVal = 0.0; //Inicialitzem a zero, suposem que l'autocorr max sempre > 0
   int index = 0;
 
-  for (int i = 0; i < frameLen; i++)
+  for (int i = 0; i < r.size(); i++)
   {
     //Primer comprovem que haguem trobat un negatiu
-    //printf("%i",r[i]);
     if (firstNegative)
     {
       //Després si és un màxim
@@ -132,11 +143,10 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
       firstNegative = true;
     }
   }
-  printf("\n");
 
-  //printf('%d\n',index);
+  printf("\n%d\n",index);
 
-  //printf("%d\n",index);
+
   float frequency = 1.0 / (float)index * (float)samplingFreq;
   float pot = 10 * log10(r[0]);
 
@@ -158,7 +168,7 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
   //#endif
 
   if (unvoiced(pot, r[1] / r[0], r[index] / r[0]) or index == 0)
-    return 0;
+    return 0.0;
   else
     return frequency;
 
