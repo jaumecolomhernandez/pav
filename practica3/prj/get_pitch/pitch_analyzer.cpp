@@ -30,6 +30,11 @@ void PitchAnalyzer::autocorrelation(const vector<float> &x, vector<float> &r) co
       sum = sum + x[j] * x[j + i];
     }
     if (normalization)
+    //OJO AQUÍ
+    //Añadimos un factor de normalización al resultado de la autocorrelacion,
+    //esto se basa en que se calcula la suma con size - i operaciones, entonces los 
+    //últimos valores tienen mucho menos peso. Este factor de normalización solventa esto.
+    //Añadimos el 1000 para que sea todo más grande.
     {
       r[i] = sum * 1000.0 / n_size;
     }
@@ -175,6 +180,16 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
       maxVal2 = c[i];
     }
   }
+
+  //Notas MIQUEL
+
+  //TODO: Acabar l'anàlisis amb el CEPSTRUM. Això vol dir passar del cepstrum -> Pitch i 
+  // mirar de fer l'anàlisis de sonoritat a partir del Cepstrum (llegir PDF)
+
+  //TODO: Mirar com podem corregir els resultats en els fitxers masculins. Apareix un percentatge
+  //d'errors grans(>20) bastant alt i molt més alt que en el femeni (ronda el 2%). Una proposta és
+  //no mirar el valor absolutament més gran sinó el primer que és prou gran, podria ser una fracció 
+  //de la potència?
 
   //Debug - Print del valor màxim de l'autocorrelació i del cepstrum
   printf("\n%d-%d\n", index, index2);
