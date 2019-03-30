@@ -118,6 +118,7 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
   for (int i = 0; i < frameLen; i++)
   {
     //Primer comprovem que haguem trobat un negatiu
+    //printf("%i",r[i]);
     if (firstNegative)
     {
       //Després si és un màxim
@@ -131,6 +132,9 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
       firstNegative = true;
     }
   }
+  printf("\n");
+
+  //printf('%d\n',index);
 
   //printf("%d\n",index);
   float frequency = 1.0 / (float)index * (float)samplingFreq;

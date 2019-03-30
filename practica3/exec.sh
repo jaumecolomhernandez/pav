@@ -8,3 +8,5 @@ make -C ./prj all
 python run_pitch.py 
 #Evaluation
 ./bin/release/pitch_evaluate ./exports/*.f0ref
+#Plot
+python plot_results.py
