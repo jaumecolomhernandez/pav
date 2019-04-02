@@ -3,7 +3,7 @@
 #include "wavfile_mono.h"
 #include "pitch_analyzer.h"
 
-#define FRAME_LEN 0.030   /* 30 ms. */
+#define FRAME_LEN 0.03   /* 30 ms. */
 #define FRAME_SHIFT 0.015 /* 15 ms. */
 
 using namespace std;
@@ -48,6 +48,48 @@ int main(int argc, const char *argv[])
   ///Iterate for each frame and save values in f0 vector
   vector<float>::iterator iX;
   vector<float> f0;
+
+
+  /*FILE * pFile;
+   int n;
+   pFile = fopen ("myfile.txt","w");
+  for (int i = 0; i< x.size();i++){
+     fprintf (pFile, "%f\n",x[i]);
+   }
+   fclose (pFile);
+  
+  float maxVal=0;
+  for (int i = 0; i< x.size();i++){
+    if(x[i]>0){
+      if (abs(x[i]) > abs(maxVal)){
+            maxVal = abs(x[i]);
+      }
+    }
+  }
+  maxVal=maxVal*0.2;
+  for (int i = 0; i< x.size();i++){
+    if(x[i]>maxVal){
+      x[i]=x[i]-maxVal;
+    }
+    else if(x[i]<-maxVal){
+      x[i]=x[i]+maxVal;
+    }
+    else{
+      x[i]=0;
+    }
+  }
+  
+  FILE * p2File;
+   int n;
+   p2File = fopen ("myfileout.txt","w");
+  for (int i = 0; i< x.size();i++){
+     fprintf (p2File, "%f\n",x[i]);
+   }
+   fclose (p2File);
+  */
+
+
+
   for (iX = x.begin(); iX + n_len < x.end(); iX = iX + n_shift)
   {
     float f = analyzer(iX, iX + n_len);

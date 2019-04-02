@@ -44,11 +44,14 @@ void PitchAnalyzer::autocorrelation(const vector<float> &x, vector<float> &r) co
     }
     //printf("%f ",sum);
   }
-  printf("\n\n");
+  //printf("\n\n");
 
   if (r[0] == 0.0F) //to avoid log() and divide zero
     r[0] = 1e-10;
 }
+
+
+
 
 void PitchAnalyzer::set_window(Window win_type)
 {
@@ -142,8 +145,10 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
 
   for (int i = 0; i < r.size(); i++)
   {
-    //Primer comprovem que haguem trobat un negatiu
-    if (firstNegative)
+    //Primer comprovem que haguem trobat un negatiu ja que amb la correlació després del primer pic i abans del següent
+    //hi ha un pas per 0
+    //També es posa com a condició i>60 per a tenir una resolució màxima de fins a 333Hz
+    if (firstNegative && i>60)
     {
       //Després si és un màxim
       if (r[i] > maxVal)
@@ -160,26 +165,34 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
 
   //CÀLCUL DEL CEPSTRUM
   vector<float> c(npitch_max);
+  int sizepre=x.size();
   cepstrum(x, c);
+  int sizepos=x.size();
 
   //Càlcul del valor màxim del Cepstrum
   //COM ES PASSA DE VALOR MÀXIM DEL CEPSTRUM A FREQÜENCIA?
 
-  float maxVal2 = -1000.0; //Inicialitzem a -1000, suposem que l'autocorr max sempre > 0 FALTA PENSAR ALGO MÉS ELEGANT
+  float maxVal2 = 0; //Inicialitzem a 0, suposem que el cepstrum max sempre > 0
   int index2 = 0;
-
-  for (int i = 0; i < 256 - 1; i++)
+  //int i= static_cast<int>(samplingFreq/70);
+  //Amb n<285 estem tenint en compte les frequencies de pitch a partir de 70 Hz
+  //Amb n>60 com a molt tenim una resolució de fins a 333Hz, valor que es troba molt per sobre de la mitjana de les dones,
+  //tot i que el pitch pot arribar fins a 500Hz al detectar homes i dones si es possa un rang tant ampli i han molts errors.
+  for (int n=60; n < 285;n++)
   {
     //Debug - Print dels valors del cepstrum
-    cout << c[i] << " ";
+    //cout << c[i] << " ";
 
     //Comprovem que sigui major que el anterior màxim
-    if (c[i] > maxVal2)
+    if (c[n] > maxVal2)
     {
-      index2 = i;
-      maxVal2 = c[i];
+      index2 = n;
+      maxVal2 = c[n];
     }
   }
+  printf("%d %d\n", sizepre,sizepos);
+  //index2=index2*sizepos/(sizepre);
+
 
   //Notas MIQUEL
 
@@ -192,9 +205,12 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
   //de la potència?
 
   //Debug - Print del valor màxim de l'autocorrelació i del cepstrum
-  printf("\n%d-%d\n", index, index2);
+  //printf("\n%d-%d\n", index, index2);
+  //printf("%d\n",samplingFreq);
 
-  float frequency = 1.0 / (float)index * (float)samplingFreq;
+  //https://www.johndcook.com/blog/2016/05/18/cepstrum-quefrency-and-pitch/
+
+  float frequency =1/(float)index2 * (float)samplingFreq;
   float pot = 10 * log10(r[0]);
 
 //Comprovamos que sea un tramo con voz

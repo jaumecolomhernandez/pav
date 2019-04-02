@@ -2,8 +2,8 @@
 import matplotlib.pyplot as plt
 import sys
 import numpy as np
-base_path = '/home/jc/pav/practica3/'
-num='05'
+base_path = '/home/emebe/Documentos/gitPAV/Pav/practica3/'
+num='03'
 
 for i in range(10,50):
     data = np.loadtxt(base_path+'exports/rl0'+str(i)+'.f0')

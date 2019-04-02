@@ -20,11 +20,13 @@ void cepstrum(std::vector<float> &signal, std::vector<float> &cepstrum)
     //Vars
     float x[N], X[N];
     int i, sgn = 1;
+    int zeropadding=0;
 
     //Delta para evitar errores de /0 y Nan
     float eps = 1e-20;
 
     //Copiamos la señal y añadimos ceros para llegar a 512
+    //Esto es debido a que com condición para la fft es necesaria tener 2^n muestras
     //ATENCIÓN ZERO PADDING - QUE SUCEDE AL HACER LA INVERSA?
     for (i = 0; i < signal.size(); i++)
     {
@@ -62,7 +64,6 @@ void cepstrum(std::vector<float> &signal, std::vector<float> &cepstrum)
     {
         cepstrum[i] = x[i];
     }
-
     //Debug - Printeja el resultat del Cepstrum 
     //   for (i=0; i< N/2-1; i++)
     //     cout << cepstrum[i] << " ";
