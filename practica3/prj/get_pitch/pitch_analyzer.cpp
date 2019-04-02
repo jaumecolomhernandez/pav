@@ -104,7 +104,7 @@ bool PitchAnalyzer::unvoiced(float pot, float r1norm, float rmaxnorm) const
 
   bool debug = true; //Flag to print data to files for posterior use in wavesurfer
 
-  if (pot > -15.00 && r1norm > 0.70)
+  if (pot > -18.00 && (r1norm > 0.75 || rmaxnorm >0.65))
   {
     return false;
   }
@@ -190,7 +190,8 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
       maxVal2 = c[n];
     }
   }
-  printf("%d %d\n", sizepre,sizepos);
+  //Debug -  print del tamany de de la finestra
+  //printf("%d %d\n", sizepre,sizepos);
   //index2=index2*sizepos/(sizepre);
 
 
@@ -210,7 +211,7 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
 
   //https://www.johndcook.com/blog/2016/05/18/cepstrum-quefrency-and-pitch/
 
-  float frequency =1/(float)index2 * (float)samplingFreq;
+  float frequency =1/(float)index * (float)samplingFreq;
   float pot = 10 * log10(r[0]);
 
 //Comprovamos que sea un tramo con voz
