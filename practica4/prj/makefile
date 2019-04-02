@@ -4,7 +4,7 @@ SHELL   = /bin/sh
 
 #------------------------------------------------------------------------------------
 # TO DO: Add the directories to "make" (directories where where something must be done.)
-MODULES := pav make_wizard get_pitch vad test_fft
+MODULES := pav make_wizard get_pitch vad test_fft gmm gmm_verify fmatrix pearson scripts
 #------------------------------------------------------------------------------------
 
 .PHONY: help all debug release clean clean_debug clean_release clean_all $(MODULES)
