@@ -9,6 +9,8 @@
 *.f0
 *.a
 practica3/prj/html
-practica3/bin/**
+practica3/bin/
 practica3/lib/
 practica3/audios
+practica4/bin/
+practica4/lib/
