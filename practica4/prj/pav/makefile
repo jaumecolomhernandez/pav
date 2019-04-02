@@ -18,36 +18,33 @@ ifndef THIS_IS_A_SRC_DIR
 
 
 #------------------------------------------------------------------------------------
-# TO DO: Change the name of the program if you want
-PROG1 := $(BIN_DIR)/$(MODULE_NAME)
+# TO DO: If you want, change the name of the library
+LIB1 := $(LIB_DIR)/lib$(MODULE_NAME).a
 
 # TO DO: All the .cpp files, ... or choose the ones you need
-CPPSRC1  := $(notdir $(wildcard $(SOURCE_DIR)/*.cpp))
+L_CPPSRC1 := $(notdir $(wildcard $(SOURCE_DIR)/*.cpp))
 
 # TO DO: All the .c files, ... or choose the ones you need
-CSRC1 := $(notdir $(wildcard $(SOURCE_DIR)/*.c))
-
-# TO DO: Add the requiered libraries using the -l form (-lmy -> libmy.a)
-LDLIBS1 :=
+L_CSRC1 := $(notdir $(wildcard $(SOURCE_DIR)/*.c))
 
 #-----------------------------------------------------------------
-all: $(PROG1)
+all: $(LIB1)
 #-----------------------------------------------------------------
-DEP1     := $(CPPSRC1:.cpp=.d) $(CSRC1:.c=.d)
-OBJ1     := $(DEP1:.d=.o)
+L_DEP1     := $(L_CPPSRC1:.cpp=.d) $(L_CSRC1:.c=.d)
+L_OBJ1     := $(L_DEP1:.d=.o)
 
-$(PROG1): $(DEP1) $(OBJ1) $(LDLIBS1) $(LDLIBS)
-	@-test  -d $(@D) || (echo "Create bin dir: $(@D)"; mkdir -p $(@D) )
-	$(CXX) $(LDDFLAGS) $(OBJ1) $(LDLIBS1) $(LDLIBS) -o $@
+$(LIB1): $(L_DEP1) $(LIB1)($(L_OBJ1)) 
+	@-test  -d $(@D) || (echo "Create lib dir: $(@D)"; mkdir -p $(@D) )
+	ranlib $(LIB1)
 
-include $(DEP1)
+include $(L_DEP1)
 #-----------------------------------------------------------------
 clean:
 	-rm -f $(SOURCE_DIR)/*~
-	-rm -f $(DEP1) $(OBJ1)
+	-rm -f $(L_DEP1) $(L_OBJ1)
 #-----------------------------------------------------------------
 clean_all:
 	-rm -f $(SOURCE_DIR)/*~
-	-rm -f $(DEP1) $(OBJ1) $(PROG1)
+	-rm -f $(L_DEP1) $(L_OBJ1) $(LIB1)
 endif
 
