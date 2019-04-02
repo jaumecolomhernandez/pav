@@ -3,7 +3,7 @@
 #include "wavfile_mono.h"
 #include "pitch_analyzer.h"
 
-#define FRAME_LEN 0.03   /* 30 ms. */
+#define FRAME_LEN 0.05   /* 30 ms. */
 #define FRAME_SHIFT 0.015 /* 15 ms. */
 
 using namespace std;
