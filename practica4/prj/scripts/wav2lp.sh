@@ -29,9 +29,13 @@ else
    LPC="lpc"
 fi
 
-
+#CREA UN FITXER TEMPORAL AMB EL SOX. SIMPLEMENT EL CÒPIA
 base=/tmp/wav2lpcc$$  # temporal file  
 sox $inputfile $base.raw 
+
+#EXPLICAR QUE FA AIXÒ  
+#-EXTREU CARÀCTERÍSTIQUES
+#-LES PRINTEJA A UN FITXER 
 $X2X +sf < $base.raw | $FRAME -l 400 -p 80 | $WINDOW -l 400 -L 400 |\
           $LPC -l 400 -m $lpc_order > $base.lp
 

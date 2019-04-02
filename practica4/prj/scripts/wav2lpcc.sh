@@ -36,6 +36,7 @@ fi
 
 base=/tmp/wav2lpcc$$  # temporal file  
 sox $inputfile $base.raw # $3 => 3rd argument, input.wav
+#EXPLICAR QUE FA AIXÒ
 $X2X +sf < $base.raw | $FRAME -l 400 -p 80 | $WINDOW -l 400 -L 512 |\
           $LPC -l 400 -m $lpc_order | $LPC2C -m $lpc_order -M $nceps > $base.cep
 
