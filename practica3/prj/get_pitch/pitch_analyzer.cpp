@@ -19,7 +19,7 @@ void PitchAnalyzer::autocorrelation(const vector<float> &x, vector<float> &r) co
   float sum;
   int i, j;
 
-  bool normalization = true;
+  bool normalization = false;
 
   for (i = 0; i < size; ++i)
   {
@@ -42,9 +42,10 @@ void PitchAnalyzer::autocorrelation(const vector<float> &x, vector<float> &r) co
     {
       r[i] = sum;
     }
-    //printf("%f ",sum);
+    //DEBUG - 
+    printf("%f ",sum);
   }
-  //printf("\n\n");
+  printf("\n\n");
 
   if (r[0] == 0.0F) //to avoid log() and divide zero
     r[0] = 1e-10;
@@ -101,7 +102,8 @@ bool PitchAnalyzer::unvoiced(float pot, float r1norm, float rmaxnorm) const
 {
   //Returns if the trace is voiced or not.
 
-  if (pot > -18.00 && (r1norm > 0.75 || rmaxnorm >0.65)) //Valors optims per al cas de autocorrelació
+  //if (pot > -18.00 && (r1norm > 0.75 || rmaxnorm >0.65)) //Valors optims per al cas de autocorrelació
+  if (pot > -20.0 && r1norm >0.8)  //valors optims per cepstrum
   {
     return false;
   }
@@ -194,7 +196,7 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
 
   //https://www.johndcook.com/blog/2016/05/18/cepstrum-quefrency-and-pitch/
 
-  float frequency =1/(float)index2 * (float)samplingFreq;
+  float frequency =1/(float)index * (float)samplingFreq;
   float pot = 10 * log10(r[0]);
 
 //Comprovem que sigui una trama de veu 

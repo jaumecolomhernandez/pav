@@ -50,7 +50,8 @@ int main(int argc, const char *argv[])
   vector<float> f0;
 
   //PREPROCESSAT - Center clipping
-  if (0)
+  bool center_clipping = false;
+  if (center_clipping)
   {
     float maxVal = 0;
     //Es busca el valor absolut màxim de la trama analitzada
@@ -87,7 +88,8 @@ int main(int argc, const char *argv[])
 
   //POSTPROCESSAT - Càlcul del filtre de mitjana
   //Utilitzem un filtre de mitjana per a millorar els resultats del detector
-  if (0)
+  bool filtre_mediana = true;
+  if (filtre_mediana)
   {
     //Declaració variables
     vector<float> f0_windowed;

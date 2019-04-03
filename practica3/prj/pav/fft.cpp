@@ -28,7 +28,7 @@ void cepstrum(std::vector<float> &signal, std::vector<float> &cepstrum)
     //Copiamos la señal y añadimos ceros para llegar a 512
     //Esto es debido a que com condición para la fft es necesaria tener 2^n muestras
     //ATENCIÓN ZERO PADDING - QUE SUCEDE AL HACER LA INVERSA?
-    for (i = 0; i < signal.size() && i < N; i++)
+    for (i = 0; (i < signal.size()) && (i < N) ;i++)
     {
         x[i] = signal[i];
     }
