@@ -3,7 +3,7 @@
 #include "wavfile_mono.h"
 #include "pitch_analyzer.h"
 
-#define FRAME_LEN 0.05   /* 30 ms. */
+#define FRAME_LEN 0.03   /* 30 ms. */
 #define FRAME_SHIFT 0.015 /* 15 ms. */
 
 using namespace std;
@@ -96,40 +96,48 @@ int main(int argc, const char *argv[])
     f0.push_back(f);
   }
 
+  //POSTPROCESSAT - Càlcul del filtre de mitjana
+  //Utilitzem un filtre de mitjana per a millorar els resultats del detector
   if (1)
   {
+    //Declaració variables
     vector<float> f0_windowed;
     float result;
+
+    //Loop de càlcul
     for (int i = 0; i < f0.size(); i++)
     {
+      //Com que implementem una finestra de 5 mostres sol podem agafar 
+      //mostres de les posicions >2 i <tamany-2
       if (i < 3 || i >= (f0.size() - 2))
       {
+        //Sinó sol copiem el resultat
         f0_windowed.push_back(f0[i]);
       }
       else
       {
+        //Càlcul del filtre
         float window[5];
-        for (int j = 0; j < 5; ++j) //Copy elements to window
+        for (int j = 0; j < 5; ++j) //Copia dels elements a window
           window[j] = f0[i - 2 + j];
-        //Order elements (only half of them)
+        //Ordenem els elements (sòl la mitat)
         for (int j = 0; j < 3; ++j)
         {
-          //Find position of minimum element
+          //Trobem la posició del element més petit
           int min = j;
           for (int k = j + 1; k < 5; ++k)
             if (window[k] < window[min])
               min = k;
-          //Put found minimum element in its place
+          //Posem el mínim al seu lloc
           const float temp = window[j];
           window[j] = window[min];
           window[min] = temp;
         }
-        //Get result - the middle element
+        //El resultat que volem és l'element del mig
         result = window[2];
         f0_windowed.push_back(result);
       }
     }
-
     f0 = f0_windowed;
   }
 
