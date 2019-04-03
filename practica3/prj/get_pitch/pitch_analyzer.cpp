@@ -100,9 +100,6 @@ void PitchAnalyzer::set_f0_range(float min_F0, float max_F0)
 bool PitchAnalyzer::unvoiced(float pot, float r1norm, float rmaxnorm) const
 {
   //Returns if the trace is voiced or not.
-  //HEM DE PENSAR QUE FIQUEM AQUÍ!
-
-  bool debug = true; //Flag to print data to files for posterior use in wavesurfer
 
   if (pot > -18.00 && (r1norm > 0.75 || rmaxnorm >0.65))
   {
@@ -190,20 +187,10 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
       maxVal2 = c[n];
     }
   }
+  
   //Debug -  print del tamany de de la finestra
   //printf("%d %d\n", sizepre,sizepos);
   //index2=index2*sizepos/(sizepre);
-
-
-  //Notas MIQUEL
-
-  //TODO: Acabar l'anàlisis amb el CEPSTRUM. Això vol dir passar del cepstrum -> Pitch i 
-  // mirar de fer l'anàlisis de sonoritat a partir del Cepstrum (llegir PDF)
-
-  //TODO: Mirar com podem corregir els resultats en els fitxers masculins. Apareix un percentatge
-  //d'errors grans(>20) bastant alt i molt més alt que en el femeni (ronda el 2%). Una proposta és
-  //no mirar el valor absolutament més gran sinó el primer que és prou gran, podria ser una fracció 
-  //de la potència?
 
   //Debug - Print del valor màxim de l'autocorrelació i del cepstrum
   //printf("\n%d-%d\n", index, index2);
@@ -211,7 +198,7 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
 
   //https://www.johndcook.com/blog/2016/05/18/cepstrum-quefrency-and-pitch/
 
-  float frequency =1/(float)index * (float)samplingFreq;
+  float frequency =1/(float)index2 * (float)samplingFreq;
   float pot = 10 * log10(r[0]);
 
 //Comprovamos que sea un tramo con voz

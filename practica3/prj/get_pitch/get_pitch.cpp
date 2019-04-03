@@ -3,7 +3,7 @@
 #include "wavfile_mono.h"
 #include "pitch_analyzer.h"
 
-#define FRAME_LEN 0.03   /* 30 ms. */
+#define FRAME_LEN 0.05    /* 30 ms. */
 #define FRAME_SHIFT 0.015 /* 15 ms. */
 
 using namespace std;
@@ -49,31 +49,36 @@ int main(int argc, const char *argv[])
   vector<float>::iterator iX;
   vector<float> f0;
 
-
-  /*
-  float maxVal=0;
-  //Es busca el valor absolut màxim de la trama analitzada
-  for (int i = 0; i< x.size();i++){
-      if (abs(x[i]) > abs(maxVal)){
-            maxVal = abs(x[i]);
+  //PREPROCESSAT - Center clipping
+  if (0)
+  {
+    float maxVal = 0;
+    //Es busca el valor absolut màxim de la trama analitzada
+    for (int i = 0; i < x.size(); i++)
+    {
+      if (abs(x[i]) > abs(maxVal))
+      {
+        maxVal = abs(x[i]);
+      }
+    }
+    //Es defineix com a llindar de decissió el 20% del màxim de la senyal
+    maxVal = maxVal * 0.2;
+    for (int i = 0; i < x.size(); i++)
+    {
+      if (x[i] > maxVal)
+      {
+        x[i] = x[i] - maxVal; //En cas de ser una mostra positiva i major que el llindar, hem de restarli aquest llindar a cada mostra
+      }
+      else if (x[i] < -maxVal)
+      {
+        x[i] = x[i] + maxVal; // En cas de ser negativa, el llindar té el mateix valor però amb signe negatiu
+      }
+      else
+      {
+        x[i] = 0; //Finalment si la mostra es troba entre maxVal i -maxVal el seu valor passarà a ser 0.
+      }
     }
   }
-  //Es defineix com a llindar de decissió el 20% del màxim de la senyal 
-  maxVal=maxVal*0.2;
-  for (int i = 0; i< x.size();i++){
-    if(x[i]>maxVal){
-      x[i]=x[i]-maxVal; //En cas de ser una mostra positiva i major que el llindar, hem de restarli aquest llindar a cada mostra
-    }
-    else if(x[i]<-maxVal){
-      x[i]=x[i]+maxVal; // En cas de ser negativa, el llindar té el mateix valor però amb signe negatiu 
-    }
-    else{
-      x[i]=0; //Finalment si la mostra es troba entre maxVal i -maxVal el seu valor passarà a ser 0.
-    }
-  }
-  */
-
-
 
   for (iX = x.begin(); iX + n_len < x.end(); iX = iX + n_shift)
   {
@@ -83,7 +88,7 @@ int main(int argc, const char *argv[])
 
   //POSTPROCESSAT - Càlcul del filtre de mitjana
   //Utilitzem un filtre de mitjana per a millorar els resultats del detector
-  if (1)
+  if (0)
   {
     //Declaració variables
     vector<float> f0_windowed;
@@ -92,7 +97,7 @@ int main(int argc, const char *argv[])
     //Loop de càlcul
     for (int i = 0; i < f0.size(); i++)
     {
-      //Com que implementem una finestra de 5 mostres sol podem agafar 
+      //Com que implementem una finestra de 5 mostres sol podem agafar
       //mostres de les posicions >2 i <tamany-2
       if (i < 3 || i >= (f0.size() - 2))
       {
