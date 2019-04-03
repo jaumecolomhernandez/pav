@@ -79,7 +79,6 @@ int main(int argc, const char *argv[])
       }
     }
   }
-
   for (iX = x.begin(); iX + n_len < x.end(); iX = iX + n_shift)
   {
     float f = analyzer(iX, iX + n_len);
