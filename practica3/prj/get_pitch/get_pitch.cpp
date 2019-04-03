@@ -50,42 +50,27 @@ int main(int argc, const char *argv[])
   vector<float> f0;
 
 
-  /*FILE * pFile;
-   int n;
-   pFile = fopen ("myfile.txt","w");
-  for (int i = 0; i< x.size();i++){
-     fprintf (pFile, "%f\n",x[i]);
-   }
-   fclose (pFile);
-  
+  /*
   float maxVal=0;
+  //Es busca el valor absolut màxim de la trama analitzada
   for (int i = 0; i< x.size();i++){
-    if(x[i]>0){
       if (abs(x[i]) > abs(maxVal)){
             maxVal = abs(x[i]);
-      }
     }
   }
+  //Es defineix com a llindar de decissió el 20% del màxim de la senyal 
   maxVal=maxVal*0.2;
   for (int i = 0; i< x.size();i++){
     if(x[i]>maxVal){
-      x[i]=x[i]-maxVal;
+      x[i]=x[i]-maxVal; //En cas de ser una mostra positiva i major que el llindar, hem de restarli aquest llindar a cada mostra
     }
     else if(x[i]<-maxVal){
-      x[i]=x[i]+maxVal;
+      x[i]=x[i]+maxVal; // En cas de ser negativa, el llindar té el mateix valor però amb signe negatiu 
     }
     else{
-      x[i]=0;
+      x[i]=0; //Finalment si la mostra es troba entre maxVal i -maxVal el seu valor passarà a ser 0.
     }
   }
-  
-  FILE * p2File;
-   int n;
-   p2File = fopen ("myfileout.txt","w");
-  for (int i = 0; i< x.size();i++){
-     fprintf (p2File, "%f\n",x[i]);
-   }
-   fclose (p2File);
   */
 
 
