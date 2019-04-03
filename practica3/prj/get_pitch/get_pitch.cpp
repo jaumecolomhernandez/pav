@@ -3,7 +3,7 @@
 #include "wavfile_mono.h"
 #include "pitch_analyzer.h"
 
-#define FRAME_LEN 0.05   /* 30 ms. */
+#define FRAME_LEN 0.05   /* 50 ms. */
 #define FRAME_SHIFT 0.015 /* 15 ms. */
 
 using namespace std;
@@ -49,7 +49,7 @@ int main(int argc, const char *argv[])
   vector<float>::iterator iX;
   vector<float> f0;
 
-
+  //CENTER CLIPPING (comentat degut a que empitjora les mètriques)
   /*
   float maxVal=0;
   //Es busca el valor absolut màxim de la trama analitzada
@@ -74,7 +74,7 @@ int main(int argc, const char *argv[])
   */
 
 
-
+  // IMPLEMENTACIÓ FILTRE DE MEDIANA
   for (iX = x.begin(); iX + n_len < x.end(); iX = iX + n_shift)
   {
     float f = analyzer(iX, iX + n_len);
