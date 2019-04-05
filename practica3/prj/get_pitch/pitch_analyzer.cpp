@@ -32,7 +32,7 @@ void PitchAnalyzer::autocorrelation(const vector<float> &x, vector<float> &r) co
     if (normalization)
     //OJO AQUÍ
     //Añadimos un factor de normalización al resultado de la autocorrelacion,
-    //esto se basa en que se calcula la suma con size - i operaciones, entonces los 
+    //esto se basa en que se calcula la suma con size - i operaciones, entonces los
     //últimos valores tienen mucho menos peso. Este factor de normalización solventa esto.
     //Añadimos el 1000 para que sea todo más grande.
     {
@@ -42,17 +42,14 @@ void PitchAnalyzer::autocorrelation(const vector<float> &x, vector<float> &r) co
     {
       r[i] = sum;
     }
-    //DEBUG - 
-    printf("%f ",sum);
+    //DEBUG -
+    //printf("%f ", sum);
   }
-  printf("\n\n");
+  //printf("\n\n");
 
   if (r[0] == 0.0F) //to avoid log() and divide zero
     r[0] = 1e-10;
 }
-
-
-
 
 void PitchAnalyzer::set_window(Window win_type)
 {
@@ -101,9 +98,8 @@ void PitchAnalyzer::set_f0_range(float min_F0, float max_F0)
 bool PitchAnalyzer::unvoiced(float pot, float r1norm, float rmaxnorm) const
 {
   //Returns if the trace is voiced or not.
-
-  //if (pot > -18.00 && (r1norm > 0.75 || rmaxnorm >0.65)) //Valors optims per al cas de autocorrelació
-  if (pot > -20.0 && r1norm >0.8)  //valors optims per cepstrum
+  //if (pot > -18.00 && (r1norm > 0.7 || rmaxnorm >0.65)) //Valors optims per al cas de autocorrelació
+  if (pot > -23.0 && r1norm > 0.71) //valors optims per cepstrum
   {
     return false;
   }
@@ -146,7 +142,7 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
     //Primer comprovem que haguem trobat un negatiu ja que amb la correlació després del primer pic i abans del següent
     //hi ha un pas per 0
     //També es posa com a condició i>60 per a tenir una resolució màxima de fins a 333Hz
-    if (firstNegative && i>60)
+    if (firstNegative && i > 60)
     {
       //Després comprobem si és un màxim
       if (r[i] > maxVal)
@@ -162,10 +158,10 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
   }
 
   //CÀLCUL DEL CEPSTRUM
-  vector<float> c(npitch_max);
-  int sizepre=x.size();
+  vector<float> c(512);
+  int sizepre = x.size();
   cepstrum(x, c);
-  int sizepos=x.size();
+  int sizepos = x.size();
 
   //Càlcul del valor màxim del Cepstrum
 
@@ -174,7 +170,7 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
   //Amb n<285 estem tenint en compte les frequencies de pitch a partir de 70 Hz
   //Amb n>60 com a molt tenim una resolució de fins a 333Hz, valor que es troba molt per sobre de la mitjana de les dones,
   //tot i que el pitch pot arribar fins a 500Hz al detectar homes i dones si es possa un rang tant ampli i han molts errors.
-  for (int n=60; n < 285;n++)
+  for (int n = 60; n < 285; n++)
   {
     //Debug - Print dels valors del cepstrum
     //cout << c[i] << " ";
@@ -186,7 +182,7 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
       maxVal2 = c[n];
     }
   }
-  
+
   //Debug -  print del tamany de de la finestra
   //printf("%d %d\n", sizepre,sizepos);
 
@@ -196,10 +192,10 @@ float PitchAnalyzer::compute_pitch(vector<float> &x) const
 
   //https://www.johndcook.com/blog/2016/05/18/cepstrum-quefrency-and-pitch/
 
-  float frequency =1/(float)index * (float)samplingFreq;
+  float frequency = 1 / (float)index2 * (float)samplingFreq;
   float pot = 10 * log10(r[0]);
 
-//Comprovem que sigui una trama de veu 
+//Comprovem que sigui una trama de veu
 //Sino no es pot extreure el pitch
 
 //Debug - Printeja potencia, r1/pot i rmax/pot

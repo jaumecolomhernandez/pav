@@ -88,7 +88,7 @@ int main(int argc, const char *argv[])
 
   //POSTPROCESSAT - Càlcul del filtre de mitjana
   //Utilitzem un filtre de mitjana per a millorar els resultats del detector
-  bool filtre_mediana = true;
+  bool filtre_mediana = false;
   if (filtre_mediana)
   {
     //Declaració variables

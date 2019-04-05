@@ -9,7 +9,7 @@
 
 using namespace std;
 
-const int N = 512;
+const int N = 1024;
 
 void cepstrum(std::vector<float> &signal, std::vector<float> &cepstrum)
 //Aquesta funció calcula el Cepstrum del vector signal
