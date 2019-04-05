@@ -55,6 +55,7 @@ int main(int argc, const char *argv[]) {
 
   switch (init_method) {
   case 1:
+    gmm.random_init(data, nmix);
     break;
   case 2:
     break;
@@ -65,7 +66,7 @@ int main(int argc, const char *argv[]) {
   }
 
   //TODO: Apply EM to estimate GMM parameters (complete the funcion in gmm.cpp)
-
+  gmm.em(data, ending_iterations, ending_threshold, verbose);
 
   //Create directory, if it is needed
   gmm_filename.checkDir();
@@ -168,7 +169,8 @@ int read_data(const string & input_directory, const string & input_extension,
   //It is better to read first all files to know total_nrows
   for (unsigned int i=0; i<filenames.size(); ++i) {
     string path = input_directory + filenames[i] + input_extension;
-    ifstream is(path.c_str(), ios::binary);
+    cout << "ERORORORORO";
+    ifstream is(path.c_str());
     if (!is.good()) {
       cerr << "Error reading file: " << path << endl;
       continue;

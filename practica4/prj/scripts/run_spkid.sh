@@ -10,7 +10,7 @@
 # Set the proper value to variables: w, db
 # w:  a working directory for temporary files
 # db: directory of the speecon database 
-w=
+w=./
 db=
 
 
