@@ -169,7 +169,6 @@ int read_data(const string & input_directory, const string & input_extension,
   //It is better to read first all files to know total_nrows
   for (unsigned int i=0; i<filenames.size(); ++i) {
     string path = input_directory + filenames[i] + input_extension;
-    cout << "ERORORORORO";
     ifstream is(path.c_str());
     if (!is.good()) {
       cerr << "Error reading file: " << path << endl;

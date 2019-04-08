@@ -10,9 +10,10 @@
 # Set the proper value to variables: w, db
 # w:  a working directory for temporary files
 # db: directory of the speecon database 
-w=./
-db=
+w="/home/jc/pav/practica4/temp"
+db="/home/jc/pav/practica4/audios/speecon"
 
+#EXPORT TO PATH THE COMPILED FILES FOLDER
 
 # ------------------------
 # Usage
@@ -57,6 +58,7 @@ which gmm_train > /dev/null
 if [[ $? != 0 ]] ; then
    echo "Set PATH to include PAV executable programs ... "
    echo "Maybe ... source pavrc ? or modify bashrc ..."
+   echo "export PATH=$PATH:/WHATEVER/"
    exit 1
 fi 
 # Now, we assume that all the path for programs are already in the path 
@@ -75,7 +77,7 @@ create_lists() {
     for dir in $db/BLOCK*/SES* ; do
 	name=${dir/*\/}
 	echo Create list for speaker $dir $name ----
-	(find -L $db/BLOCK*/$name -name "*.wav" | perl -pe 's/^.*BLOCK/BLOCK/; s/\.wav$//' | sort | unsort.sh > $name.list) || exit 1
+	(find -L $db/BLOCK*/$name -name "*.wav" | perl -pe 's/^.*BLOCK/BLOCK/; s/\.wav$//' | sort | unsort > $name.list) || exit 1
 	# split in test list (5 files) and train list (other files)
 	(head -5 $name.list | sort > $w/lists/$name.test) || exit 1
 	(tail -n +6 $name.list | sort > $w/lists/$name.train) || exit 1
@@ -94,7 +96,7 @@ compute_mcp() {
     for line in $(cat $w/lists/all.train) $(cat $w/lists/all.test); do
         mkdir -p `dirname $w/mcp/$line.mcp`
         echo "wav2mfcc 24 16 $db/$line.wav" "$w/mcp/$line.mcp"
-        wav2lpcc.sh 4 8 "$db/$line.wav" "$w/mcp/$line.mcp" || exit 1
+        wav2lpcc 4 8 "$db/$line.wav" "$w/mcp/$line.mcp" || exit 1
     done
 }
 
@@ -110,7 +112,7 @@ create_lists_verif() {
     find  -L $db -type d -name 'SES*' -printf '%P\n'|\
            perl -pe 's|BLOCK../||' | sort > $dirlv/all.txt
 
-    unsort.sh $dirlv/all.txt > all_spk 
+    unsort $dirlv/all.txt > all_spk 
 
     # split speakers into: users (50), impostors (50) and the others
     (head -50 all_spk | sort > $dirlv/users.txt) || exit 1
@@ -197,7 +199,8 @@ for cmd in $*; do
        for dir in $db/BLOCK*/SES* ; do
 	   name=${dir/*\/}
 	   echo $name ----
-	   gmm_train  -v 1 -T 0.01 -N5 -m 1 -d $w/mcp -e mcp -g $w/gmm/mcp/$name.gmm $w/lists/$name.train || exit 1
+	   # gmm_train  -v 1 -T 0.01 -N5 -m 1 -d $w/mcp -e mcp -g $w/gmm/mcp/$name.gmm $w/lists/$name.train || exit 1  #VERSIO SENSE OPCIONS
+       gmm_train -d $w/mcp -e mcp -g $w/gmm/mcp/$name.gmm $w/lists/$name.train || exit 1
            echo
        done
    elif [[ $cmd == testmcp ]]; then

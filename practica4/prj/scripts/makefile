@@ -59,6 +59,12 @@ SCRIPTSRC5 := spk_verif_score.pl
 # TO DO: write the name of the source script
 #SCRIPTSRC6 := wav2mfcc.sh
 
+# TO DO: Complete the script name
+SCRIPT6 := $(BIN_DIR)/plot_gmm.sh
+
+# TO DO: write the name of the source script
+SCRIPTSRC6 := spk_verif_score.pl
+
 
 #-----------------------------------------------------------------
 all: $(SCRIPT1) $(SCRIPT2) $(SCRIPT3) $(SCRIPT4) $(SCRIPT5) 

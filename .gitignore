@@ -8,6 +8,13 @@
 *.f0ref
 *.f0
 *.a
+*.list
+*.users
+*.test
+*.train
+*.gmm
+*.mcp
+
 practica3/prj/html
 practica3/bin/
 practica3/lib/
@@ -15,3 +22,4 @@ practica3/audios
 practica4/bin/
 practica4/lib/
 *.col
+practica4/audios/

@@ -1,5 +1,5 @@
-/* Copyright (C) José Adrián Rodríguez Fonollosa 2004.
- *               Universitat Politècnica de Catalunya, Barcelona, Spain.
+/* Copyright (C) Josï¿½ Adriï¿½n Rodrï¿½guez Fonollosa 2004.
+ *               Universitat Politï¿½cnica de Catalunya, Barcelona, Spain.
  *
  * Permission to copy, use, modify, sell and distribute this software
  * is granted provided this copyright notice appears in all copies.
