@@ -58,7 +58,7 @@ which gmm_train > /dev/null
 if [[ $? != 0 ]] ; then
    echo "Set PATH to include PAV executable programs ... "
    echo "Maybe ... source pavrc ? or modify bashrc ..."
-   echo "export PATH=$PATH:/WHATEVER/"
+   #echo "export PATH=$PATH:/WHATEVER/"
    exit 1
 fi 
 # Now, we assume that all the path for programs are already in the path 
@@ -219,15 +219,18 @@ for cmd in $*; do
                  else {$err++}
                  END {printf "nerr=%d\tntot=%d\terror_rate=%.2f%%\n", ($err, $ok+$err, 100*$err/($ok+$err))}' $w/spk_classification.log
    elif [[ $cmd == finaltest ]]; then
+        #What is finaltest
        echo "To be implemented ..."
    elif [[ $cmd == listverif ]]; then
       create_lists_verif
    elif [[ $cmd == trainworld ]]; then
-       # TODO
+       # TODO que es world
        echo "Implement the trainworld option ..."
    elif [[ $cmd == verify ]]; then
        # TODO gmm_verify --> put std output in $w/spk_verify.log, ej gmm_verify .... > $w/spk_verify.log   or gmm_verify ... | tee $w/spk_verify.log
        echo "Implement the verify option ..."
+       find $w/gmm/mcp -name '*.gmm' -printf '%P\n' | perl -pe 's/.gmm$//' | sort  > $w/lists_verif/gmm.list
+       (gmm_verify -d $w/mcp -e mcp -D $w/gmm/mcp -E gmm $w/lists_verif/gmm.list  $w/lists_verif/all.test $w/lists_verif/all.test.candidates | tee $w/spk_verify.log) || exit 1
    elif [[ $cmd == verif_err ]]; then
        if [[ ! -s $w/spk_verify.log ]] ; then
           echo "ERROR: $w/spk_verify.log not created"
@@ -235,10 +238,10 @@ for cmd in $*; do
        fi
        # You can pass the threshold to spk_verif_score.pl or it computes the
        # best one for these particular results.
-       spk_verif_score.pl $w/spk_verify.log | tee $w/spk_verify.res
+       spk_verif_score $w/spk_verify.log | tee $w/spk_verify.res
    elif [[ $cmd == roc ]]; then
        # Change threshold and compute table prob false alarm vs. prob. detection 
-       spk_verif_score.pl $w/spk_verify.log | tee $w/spk_verify.res
+       spk_verif_score $w/spk_verify.log | tee $w/spk_verify.res
        perl -ne '
          next if ! /^THR\t/; 
          chomp;
