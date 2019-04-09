@@ -6,13 +6,13 @@ make -C ./prj all
 #Export de PATH
 which gmm_train > /dev/null
 if [[ $? != 0 ]] ; then
-   export PATH=$PATH:/home/jc/pav/practica4/bin/release/
+   export PATH=$PATH:/home/pav113/pav/practica4/bin/release/
 fi
 
 #Crear llistes
-#./bin/release/run_spkid lists
+./bin/release/run_spkid listverif
 #Extracció de features
-#./bin/release/run_spkid mcp
+./bin/release/run_spkid mcp
 #Entreno (trobar els coeficients(mitjana i variança))
 ./bin/release/run_spkid verify
 #Llancem el verificador

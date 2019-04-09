@@ -10,8 +10,8 @@
 # Set the proper value to variables: w, db
 # w:  a working directory for temporary files
 # db: directory of the speecon database 
-w="/home/jc/pav/practica4/temp"
-db="/home/jc/pav/practica4/audios/speecon"
+w="/home/pav113/pav/practica4/temp"
+db="/home/pav113/pav/practica4/speecon"
 
 #EXPORT TO PATH THE COMPILED FILES FOLDER
 
@@ -150,6 +150,7 @@ create_lists_verif() {
 
     # Create candidate claims:
 
+
     # From legitime users:
     cat $dirlv/users.test | perl -ne 'chomp; print "$1\n" if m|(SES\d+)|' > $dirlv/users.test.candidates
 
@@ -219,7 +220,7 @@ for cmd in $*; do
                  else {$err++}
                  END {printf "nerr=%d\tntot=%d\terror_rate=%.2f%%\n", ($err, $ok+$err, 100*$err/($ok+$err))}' $w/spk_classification.log
    elif [[ $cmd == finaltest ]]; then
-        #What is finaltest
+        #What is finaltest????????????????
        echo "To be implemented ..."
    elif [[ $cmd == listverif ]]; then
       create_lists_verif
