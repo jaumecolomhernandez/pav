@@ -54,21 +54,20 @@ SCRIPTSRC5 := spk_verif_score.pl
 
 #-----------------------------------------------------------------
 # TO DO: Complete the script name
-#SCRIPT6 := $(BIN_DIR)/wav2mfcc
+SCRIPT6 := $(BIN_DIR)/wav2mfcc
 
 # TO DO: write the name of the source script
-#SCRIPTSRC6 := wav2mfcc.sh
+SCRIPTSRC6 := wav2mfcc.sh
 
 # TO DO: Complete the script name
-SCRIPT6 := $(BIN_DIR)/plot_gmm.sh
+SCRIPT7 := $(BIN_DIR)/plot_gmm.sh
 
 # TO DO: write the name of the source script
-SCRIPTSRC6 := spk_verif_score.pl
+SCRIPTSRC7 := spk_verif_score.pl
 
 
 #-----------------------------------------------------------------
-all: $(SCRIPT1) $(SCRIPT2) $(SCRIPT3) $(SCRIPT4) $(SCRIPT5) 
-# add $(SCRIPT6) $(SCRIPT1) 
+all: $(SCRIPT1) $(SCRIPT2) $(SCRIPT3) $(SCRIPT4) $(SCRIPT5) $(SCRIPT6) $(SCRIPT7) 
 #-----------------------------------------------------------------
 
 $(SCRIPT1): $(SCRIPTSRC1)
@@ -98,6 +97,10 @@ $(SCRIPT5): $(SCRIPTSRC5)
 $(SCRIPT6): $(SCRIPTSRC6)
 	@-test  -d $(@D) || (echo "Create bin dir: $(@D)"; mkdir -p $(@D) )
 	cd $(@D); ln -fs $(SOURCE_DIR)/$(SCRIPTSRC6) $(@F) 
+
+$(SCRIPT7): $(SCRIPTSRC7)
+	@-test  -d $(@D) || (echo "Create bin dir: $(@D)"; mkdir -p $(@D) )
+	cd $(@D); ln -fs $(SOURCE_DIR)/$(SCRIPTSRC7) $(@F) 
 #-----------------------------------------------------------------
 clean:
 	-rm -f $(SOURCE_DIR)/*~

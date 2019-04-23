@@ -194,7 +194,13 @@ for cmd in $*; do
    if [[ $cmd == lists ]]; then
       create_lists
    elif [[ $cmd == mcp ]]; then
-       compute_mcp       
+       compute_mcp
+   elif [[ $cmd == mfcc ]]; then
+        for line in $(cat $w/lists/all.train) $(cat $w/lists/all.test); do
+            mkdir -p `dirname $w/mcp/$line.mcp`
+            echo "wav2mfcc 24 16 $db/$line.wav" "$w/mcp/$line.mcp"
+            wav2mfcc 8 "$db/$line.wav" "$w/mcp/$line.mcp" || exit 1
+        done
    elif [[ $cmd == trainmcp ]]; then
        # TODO: select (or change) good parameters of gmm_train
        for dir in $db/BLOCK*/SES* ; do
@@ -227,7 +233,16 @@ for cmd in $*; do
    elif [[ $cmd == trainworld ]]; then
        # TODO que es world
        echo "Implement the trainworld option ..."
+       # PASSOS:
+       # 1- CALCULAR EL WORLD AMB MOLTS POLS I MOLTES DIMENSIONS
+       # 2- COMPARAR EN LA SEGUENT SECCIO AMB AQUEST MÓN
+       # 3- ANALITZAR RESULTATS
    elif [[ $cmd == verify ]]; then
+       # TODO gmm_verify --> put std output in $w/spk_verify.log, ej gmm_verify .... > $w/spk_verify.log   or gmm_verify ... | tee $w/spk_verify.log
+       echo "Implement the verify option ..."
+       find $w/gmm/mcp -name '*.gmm' -printf '%P\n' | perl -pe 's/.gmm$//' | sort  > $w/lists_verif/gmm.list
+       (gmm_verify -d $w/mcp -e mcp -D $w/gmm/mcp -E gmm $w/lists_verif/gmm.list  $w/lists_verif/all.test $w/lists_verif/all.test.candidates | tee $w/spk_verify.log) || exit 1
+    elif [[ $cmd == verify_with_world ]]; then
        # TODO gmm_verify --> put std output in $w/spk_verify.log, ej gmm_verify .... > $w/spk_verify.log   or gmm_verify ... | tee $w/spk_verify.log
        echo "Implement the verify option ..."
        find $w/gmm/mcp -name '*.gmm' -printf '%P\n' | perl -pe 's/.gmm$//' | sort  > $w/lists_verif/gmm.list

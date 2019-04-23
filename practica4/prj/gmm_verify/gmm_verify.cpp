@@ -53,6 +53,7 @@ float verify(const GMM &gmm_candidate, const GMM & gmm_world, const fmatrix &dat
   lprobbackground = 0.0F;
 
   score = gmm_candidate.logprob(dat);
+  score=score-gmm_world.logprob(dat);
 
 
   return score;

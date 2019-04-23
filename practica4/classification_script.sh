@@ -12,7 +12,7 @@ fi
 #Crear llistes
 ./bin/release/run_spkid lists
 #Extracció de features
-./bin/release/run_spkid mcp
+#./bin/release/run_spkid mfcc
 #Entreno (trobar els coeficients(mitjana i variança))
 ./bin/release/run_spkid trainmcp
 #Llancem el validador
