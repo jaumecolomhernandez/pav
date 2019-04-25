@@ -5,11 +5,6 @@
 # Please, adapt at your convinience, add cmds, etc.
 # Antonio Bonafonte, Nov. 2015
 
-
-# TODO
-# Set the proper value to variables: w, db
-# w:  a working directory for temporary files
-# db: directory of the speecon database 
 w="/home/jc/pav/practica4/temp"
 db="/home/jc/pav/practica4/audios/speecon"
 
@@ -58,7 +53,8 @@ which gmm_train > /dev/null
 if [[ $? != 0 ]] ; then
    echo "Set PATH to include PAV executable programs ... "
    echo "Maybe ... source pavrc ? or modify bashrc ..."
-   #echo "export PATH=$PATH:/WHATEVER/"
+   #echo "export PATH=$PATH:/WHATEVER/" 
+   #Exportem al script on cridem el run_spkid (classification_script.sh)
    exit 1
 fi 
 # Now, we assume that all the path for programs are already in the path 
@@ -204,11 +200,13 @@ for cmd in $*; do
    echo `date`: $cmd '---';
 
    if [[ $cmd == lists ]]; then
+      #Crea les llistes d'usuaris de train i de testing
       create_lists
    elif [[ $cmd == extract ]]; then
+      #Extrau les features. La configuració está dins de la funció
       compute_features
    elif [[ $cmd == trainmcp ]]; then
-      # TODO: select (or change) good parameters of gmm_train
+      #Calcula les gmm òptimes per a cada parlant
       for dir in $db/BLOCK*/SES* ; do
 	  name=${dir/*\/}
 	  echo $name ----
@@ -217,10 +215,12 @@ for cmd in $*; do
           echo
       done
    elif [[ $cmd == testmcp ]]; then
+      #Classifica cada audio amb les gmm i tria la que té més probabilitat
        find $w/gmm/mcp -name '*.gmm' -printf '%P\n' | perl -pe 's/.gmm$//' | sort  > $w/lists/gmm.list
        (gmm_classify -d $w/mcp -e mcp -D $w/gmm/mcp -E gmm $w/lists/gmm.list  $w/lists/all.test | tee $w/spk_classification.log) || exit 1
 
    elif [[ $cmd == classerr ]]; then
+      #Mira si la que s'ha triat a testmcp és el correcte i dona el resultat
        if [[ ! -s $w/spk_classification.log ]] ; then
           echo "ERROR: $w/spk_classification.log not created"
           exit 1
@@ -235,32 +235,26 @@ for cmd in $*; do
         #What is finaltest?
        echo "To be implemented ..."
    elif [[ $cmd == listverif ]]; then
+    #Crea les llistes de verificació
       create_lists_verif
    elif [[ $cmd == train_world ]]; then
-       # TODO que es world
-       echo "Implement the trainworld option ..."
-       # PASSOS:
-       # 1- CALCULAR EL WORLD AMB MOLTS POLS I MOLTES DIMENSIONS
-       # 2- COMPARAR EN LA SEGUENT SECCIO AMB AQUEST MÓN
-       # 3- ANALITZAR RESULTATS
-       gmm_train -d $w/mcp -e mcp -m 12 -g $w/world.gmm $w/lists/all.train || exit 1
+       #Crea la gmm del món, utilitza la llista ./lists/all.train
+       gmm_train -d $w/mcp -e mcp -m 12 -N 20 -g $w/gmm/mcp/world.gmm $w/lists_verif/users_and_others.train || exit 1
    elif [[ $cmd == verify ]]; then
-       # TODO gmm_verify --> put std output in $w/spk_verify.log, ej gmm_verify .... > $w/spk_verify.log   or gmm_verify ... | tee $w/spk_verify.log
+       
        echo "Implement the verify option ..."
        find $w/gmm/mcp -name '*.gmm' -printf '%P\n' | perl -pe 's/.gmm$//' | sort  > $w/lists_verif/gmm.list
        (gmm_verify -d $w/mcp -e mcp -D $w/gmm/mcp -E gmm $w/lists_verif/gmm.list  $w/lists_verif/all.test $w/lists_verif/all.test.candidates | tee $w/spk_verify.log) || exit 1
     elif [[ $cmd == verify_with_world ]]; then
-       # TODO gmm_verify --> put std output in $w/spk_verify.log, ej gmm_verify .... > $w/spk_verify.log   or gmm_verify ... | tee $w/spk_verify.log
-       echo "Implement the verify option ..."
+       #Verifica el resultat
        find $w/gmm/mcp -name '*.gmm' -printf '%P\n' | perl -pe 's/.gmm$//' | sort  > $w/lists_verif/gmm.list
-       (gmm_verify -d $w/mcp -e mcp -D $w/gmm/mcp -E gmm -w world -D $w -E gmm $w/lists_verif/gmm.list  $w/lists_verif/all.test $w/lists_verif/all.test.candidates | tee $w/spk_verify.log) || exit 1
+       (gmm_verify -d $w/mcp -e mcp -D $w/gmm/mcp -E gmm -w world $w/lists_verif/gmm.list  $w/lists_verif/all.test $w/lists_verif/all.test.candidates | tee $w/spk_verify.log) || exit 1
    elif [[ $cmd == verif_err ]]; then
+      #Prova diversos tresholds per a trobar el òptim en funció de un cost d'error de 99 vegades
        if [[ ! -s $w/spk_verify.log ]] ; then
           echo "ERROR: $w/spk_verify.log not created"
           exit 1
        fi
-       # You can pass the threshold to spk_verif_score.pl or it computes the
-       # best one for these particular results.
        spk_verif_score $w/spk_verify.log | tee $w/spk_verify.res
    elif [[ $cmd == roc ]]; then
        # Change threshold and compute table prob false alarm vs. prob. detection 
