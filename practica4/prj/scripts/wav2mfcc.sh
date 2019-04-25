@@ -4,10 +4,7 @@ if [[ $# != 3 ]]; then
    exit 1
 fi
 
-# TODO
-# This is a very trivial feature extraction.
-# Please, read sptk documentation and some papers,
-# and apply a better front end to represent the speech signal
+# MFCC FEATURES EXTRACTOR
 
 mfcc_order=$1
 inputfile=$2

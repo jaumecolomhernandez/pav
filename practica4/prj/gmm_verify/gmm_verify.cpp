@@ -48,13 +48,14 @@ float verify(const GMM &gmm_candidate, const GMM & gmm_world, const fmatrix &dat
     lprobcand, lprobbackground are just informative values that you can set and are printed.
     They are output values of this function and are not used in any way
    */
-  float score = 0.0F;
+  float score, world_prob, candidate_prob;
   lprobcand = 0.0F;
   lprobbackground = 0.0F;
 
-  score = gmm_candidate.logprob(dat);
-  score=score-gmm_world.logprob(dat);
+  candidate_prob = gmm_candidate.logprob(dat);
+  world_prob = gmm_world.logprob(dat);
 
+  score = candidate_prob/world_prob;
 
   return score;
 

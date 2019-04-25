@@ -10,8 +10,8 @@
 # Set the proper value to variables: w, db
 # w:  a working directory for temporary files
 # db: directory of the speecon database 
-w="/home/pav113/pav/practica4/temp"
-db="/home/pav113/pav/practica4/speecon"
+w="/home/jc/pav/practica4/temp"
+db="/home/jc/pav/practica4/audios/speecon"
 
 #EXPORT TO PATH THE COMPILED FILES FOLDER
 
@@ -63,7 +63,7 @@ if [[ $? != 0 ]] ; then
 fi 
 # Now, we assume that all the path for programs are already in the path 
 
-CMDS="lists mcp trainmcp testmcp classerr finaltest listverif trainworld verify verifyerr roc"
+CMDS="lists extract trainmcp testmcp classerr finaltest listverif train_world verify verifyerr roc"
 
 
 # ------------------------
@@ -92,12 +92,24 @@ create_lists() {
 # TODO: select (or change) different features, options. 
 # Make you best choice or try several options
 
-compute_mcp() {
-    for line in $(cat $w/lists/all.train) $(cat $w/lists/all.test); do
-        mkdir -p `dirname $w/mcp/$line.mcp`
-        echo "wav2mfcc 24 16 $db/$line.wav" "$w/mcp/$line.mcp"
-        wav2lpcc 4 8 "$db/$line.wav" "$w/mcp/$line.mcp" || exit 1
-    done
+compute_features() {
+    model=lpc
+    case $model in 
+        lpc)
+          for line in $(cat $w/lists/all.train) $(cat $w/lists/all.test); do
+            mkdir -p `dirname $w/mcp/$line.mcp`
+            echo "EXTRACCIO LPCC $db/$line.wav" "$w/mcp/$line.mcp"
+            wav2lpcc 4 8 "$db/$line.wav" "$w/mcp/$line.mcp" || exit 1
+          done
+          ;;
+        mfcc)
+          for line in $(cat $w/lists/all.train) $(cat $w/lists/all.test); do
+            mkdir -p `dirname $w/mcp/$line.mcp`
+            echo "Extracció MFCC $db/$line.wav" "$w/mcp/$line.mcp"
+            wav2mfcc 12 "$db/$line.wav" "$w/mcp/$line.mcp" || exit 1
+          done
+          ;;
+    esac
 }
 
 
@@ -193,23 +205,17 @@ for cmd in $*; do
 
    if [[ $cmd == lists ]]; then
       create_lists
-   elif [[ $cmd == mcp ]]; then
-       compute_mcp
-   elif [[ $cmd == mfcc ]]; then
-        for line in $(cat $w/lists/all.train) $(cat $w/lists/all.test); do
-            mkdir -p `dirname $w/mcp/$line.mcp`
-            echo "wav2mfcc 24 16 $db/$line.wav" "$w/mcp/$line.mcp"
-            wav2mfcc 8 "$db/$line.wav" "$w/mcp/$line.mcp" || exit 1
-        done
+   elif [[ $cmd == extract ]]; then
+      compute_features
    elif [[ $cmd == trainmcp ]]; then
-       # TODO: select (or change) good parameters of gmm_train
-       for dir in $db/BLOCK*/SES* ; do
-	   name=${dir/*\/}
-	   echo $name ----
-	   # gmm_train  -v 1 -T 0.01 -N5 -m 1 -d $w/mcp -e mcp -g $w/gmm/mcp/$name.gmm $w/lists/$name.train || exit 1  #VERSIO SENSE OPCIONS
-       gmm_train -d $w/mcp -e mcp -g $w/gmm/mcp/$name.gmm $w/lists/$name.train || exit 1
-           echo
-       done
+      # TODO: select (or change) good parameters of gmm_train
+      for dir in $db/BLOCK*/SES* ; do
+	  name=${dir/*\/}
+	  echo $name ----
+	  # gmm_train  -v 1 -T 0.01 -N5 -m 1 -d $w/mcp -e mcp -g $w/gmm/mcp/$name.gmm $w/lists/$name.train || exit 1  #VERSIO SENSE OPCIONS
+      gmm_train -d $w/mcp -e mcp -g $w/gmm/mcp/$name.gmm $w/lists/$name.train || exit 1
+          echo
+      done
    elif [[ $cmd == testmcp ]]; then
        find $w/gmm/mcp -name '*.gmm' -printf '%P\n' | perl -pe 's/.gmm$//' | sort  > $w/lists/gmm.list
        (gmm_classify -d $w/mcp -e mcp -D $w/gmm/mcp -E gmm $w/lists/gmm.list  $w/lists/all.test | tee $w/spk_classification.log) || exit 1
@@ -226,17 +232,18 @@ for cmd in $*; do
                  else {$err++}
                  END {printf "nerr=%d\tntot=%d\terror_rate=%.2f%%\n", ($err, $ok+$err, 100*$err/($ok+$err))}' $w/spk_classification.log
    elif [[ $cmd == finaltest ]]; then
-        #What is finaltest????????????????
+        #What is finaltest?
        echo "To be implemented ..."
    elif [[ $cmd == listverif ]]; then
       create_lists_verif
-   elif [[ $cmd == trainworld ]]; then
+   elif [[ $cmd == train_world ]]; then
        # TODO que es world
        echo "Implement the trainworld option ..."
        # PASSOS:
        # 1- CALCULAR EL WORLD AMB MOLTS POLS I MOLTES DIMENSIONS
        # 2- COMPARAR EN LA SEGUENT SECCIO AMB AQUEST MÓN
        # 3- ANALITZAR RESULTATS
+       gmm_train -d $w/mcp -e mcp -m 12 -g $w/world.gmm $w/lists/all.train || exit 1
    elif [[ $cmd == verify ]]; then
        # TODO gmm_verify --> put std output in $w/spk_verify.log, ej gmm_verify .... > $w/spk_verify.log   or gmm_verify ... | tee $w/spk_verify.log
        echo "Implement the verify option ..."
@@ -246,7 +253,7 @@ for cmd in $*; do
        # TODO gmm_verify --> put std output in $w/spk_verify.log, ej gmm_verify .... > $w/spk_verify.log   or gmm_verify ... | tee $w/spk_verify.log
        echo "Implement the verify option ..."
        find $w/gmm/mcp -name '*.gmm' -printf '%P\n' | perl -pe 's/.gmm$//' | sort  > $w/lists_verif/gmm.list
-       (gmm_verify -d $w/mcp -e mcp -D $w/gmm/mcp -E gmm $w/lists_verif/gmm.list  $w/lists_verif/all.test $w/lists_verif/all.test.candidates | tee $w/spk_verify.log) || exit 1
+       (gmm_verify -d $w/mcp -e mcp -D $w/gmm/mcp -E gmm -w world -D $w -E gmm $w/lists_verif/gmm.list  $w/lists_verif/all.test $w/lists_verif/all.test.candidates | tee $w/spk_verify.log) || exit 1
    elif [[ $cmd == verif_err ]]; then
        if [[ ! -s $w/spk_verify.log ]] ; then
           echo "ERROR: $w/spk_verify.log not created"
