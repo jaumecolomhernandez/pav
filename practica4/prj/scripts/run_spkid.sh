@@ -85,10 +85,10 @@ create_lists() {
 
 
 # command mcp: create feature from wave files
-# TODO: select (or change) different features, options. 
 # Make you best choice or try several options
 
 compute_features() {
+    # PARAMETRES NOMBRE FEATURES I NOMBRE DE TRANSFORMADORS (NOMÉS EN EL CAS DEL WAV2LPCC)
     model=lpc
     case $model in 
         lpc)
@@ -181,12 +181,12 @@ create_lists_verif() {
     cat $dirlv/users.test $dirlv/impostors4.test  > $dirlv/all.test 
     cat $dirlv/users.test.candidates $dirlv/impostors4.test.candidates  > $dirlv/all.test.candidates 
 
-     echo "Train lists:"
-     wc -l $dirlv/*.train | grep -v total; echo
+    echo "Train lists:"
+    wc -l $dirlv/*.train | grep -v total; echo
 
-     echo "Test lists"
-     wc -l $dirlv/*.test | grep -v total; echo
-     wc -l $dirlv/*.test.candidates | grep -v total
+    echo "Test lists"
+    wc -l $dirlv/*.test | grep -v total; echo
+    wc -l $dirlv/*.test.candidates | grep -v total
 
 }
 
@@ -204,9 +204,11 @@ for cmd in $*; do
       create_lists
    elif [[ $cmd == extract ]]; then
       #Extrau les features. La configuració está dins de la funció
+      #PARAMETRES: MIRAR LA FUNCIÓ
       compute_features
    elif [[ $cmd == trainmcp ]]; then
       #Calcula les gmm òptimes per a cada parlant
+      #PARAMETRES: TOTES LES FLAGS DEL GMM_TRAIN
       for dir in $db/BLOCK*/SES* ; do
 	  name=${dir/*\/}
 	  echo $name ----
@@ -239,14 +241,14 @@ for cmd in $*; do
       create_lists_verif
    elif [[ $cmd == train_world ]]; then
        #Crea la gmm del món, utilitza la llista ./lists/all.train
+       #PARAMETRES: TOTES LES FLAGS DE GMM_TRAIN I TAMBÉ LES DADES QUE FEM SERVIR (user.train, other.train, users_and_others.train)
        gmm_train -d $w/mcp -e mcp -m 12 -N 20 -g $w/gmm/mcp/world.gmm $w/lists_verif/users_and_others.train || exit 1
    elif [[ $cmd == verify ]]; then
-       
-       echo "Implement the verify option ..."
+       #Realitza la verificació dels resultats 
        find $w/gmm/mcp -name '*.gmm' -printf '%P\n' | perl -pe 's/.gmm$//' | sort  > $w/lists_verif/gmm.list
        (gmm_verify -d $w/mcp -e mcp -D $w/gmm/mcp -E gmm $w/lists_verif/gmm.list  $w/lists_verif/all.test $w/lists_verif/all.test.candidates | tee $w/spk_verify.log) || exit 1
     elif [[ $cmd == verify_with_world ]]; then
-       #Verifica el resultat
+       #Realitza la verificació dels resultats utilitzant el world
        find $w/gmm/mcp -name '*.gmm' -printf '%P\n' | perl -pe 's/.gmm$//' | sort  > $w/lists_verif/gmm.list
        (gmm_verify -d $w/mcp -e mcp -D $w/gmm/mcp -E gmm -w world $w/lists_verif/gmm.list  $w/lists_verif/all.test $w/lists_verif/all.test.candidates | tee $w/spk_verify.log) || exit 1
    elif [[ $cmd == verif_err ]]; then
