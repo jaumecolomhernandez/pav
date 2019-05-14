@@ -1,0 +1,14 @@
+
+
+This directory can be used to generated scores .sco from standard midi files.
+If the file ./midi2skini works, you should be able to execute run.sh
+Edit to select your own file.
+
+If this not work, you can re-compile using the sources found of midifile.zip
+This is open source and you can find updated versions, but it is included here
+to avoid dependencies with future changes.
+
+Antonio Bonafonte
+Universitat Politecnica de Catalunya
+Barcelona, December 2018
+
