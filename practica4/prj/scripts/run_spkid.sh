@@ -5,8 +5,8 @@
 # Please, adapt at your convinience, add cmds, etc.
 # Antonio Bonafonte, Nov. 2015
 
-w="/home/jc/pav/practica4/temp"
-db="/home/jc/pav/practica4/audios/speecon"
+w="/home/pav113/pav/practica4/temp"
+db="/home/pav113/pav/practica4/speecon"
 
 #EXPORT TO PATH THE COMPILED FILES FOLDER
 
