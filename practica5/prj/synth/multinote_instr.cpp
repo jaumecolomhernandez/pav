@@ -29,6 +29,7 @@ void InstrumentMN::command(long cmd, long note, long velocity) {
   if (i != note_instruments.end()) {
     pInst = i->second;
   }  else if (cmd != 8) { //do not create an instrument just to stop it!
+    //cout << note << endl;
     pInst = get_instrument(name, parameters);
     note_instruments[note] = pInst;
   }

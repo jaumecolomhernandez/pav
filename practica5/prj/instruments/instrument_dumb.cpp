@@ -19,12 +19,18 @@ InstrumentDumb::InstrumentDumb(const std::string &param)
     Take a Look at keyvalue.h    
   */
 
+  //cout << param;
+
   KeyValue kv(param);
   int N;
 
+
+
   if (!kv.to_int("N",N))
-    N = 40; //default value
+    N = 10; //default value
   
+  //cout << N;
+
   //Create a tbl with a tone, fixed frequency
   tbl.resize(N);
   float phase = 0, step = 2 * M_PI /(float) N;
@@ -37,7 +43,7 @@ InstrumentDumb::InstrumentDumb(const std::string &param)
 }
 
 void InstrumentDumb::command(long cmd, long note, long vel) {
-
+  //cout << note;
   if (cmd == 9) {
     bActive = true;
     adsr.start();
