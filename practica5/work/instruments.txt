@@ -1,4 +1,4 @@
 3	InstrumentNotDumb	ADSR_A=0.02; ADSR_D=0.6; ADSR_S=0.4; ADSR_R=0.1; N=30;
 4	InstrumentDumb	ADSR_A=0.02; ADSR_D=0.6; ADSR_S=0.4; ADSR_R=0.1;
-1	InstrumentFM	ADSR_A=0.2; ADSR_D=0.6; ADSR_S=0.4; ADSR_R=0.1; l=1; m=0.02; 0.01 -> trombo 0.1 -> trompeta 0.3->viola
-2   InstrumentFM	ADSR_A=0.05; ADSR_D=0.6; ADSR_S=0.4; ADSR_R=0.1; l=1; m=0.01; 0.01 -> trombo 0.1 -> trompeta 0.3->viola
+1	InstrumentFM	ADSR_A=0.02; ADSR_D=0.6; ADSR_S=0.4; ADSR_R=0.1; l=1; m=0.08; 0.01 -> trombo 0.1 -> trompeta 0.3->viola
+2   InstrumentFM	ADSR_A=0.05; ADSR_D=0.6; ADSR_S=0.4; ADSR_R=0.1; l=1; m=0.02; 0.01 -> trombo 0.1 -> trompeta 0.3->viola
