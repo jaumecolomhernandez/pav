@@ -1,6 +1,7 @@
 #include <iostream>
 #include "instrument_dumb.h"
 #include "instrument_not_dumb.h"
+#include "instrumentFM.h"
 /*
   For each new instrument:
   - Add the header
@@ -19,6 +20,9 @@ namespace upc {
     }
     if (name == "InstrumentNotDumb") {
       pInst = (Instrument *) new InstrumentNotDumb(parameters);
+    }
+    if (name == "InstrumentFM") {
+      pInst = (Instrument *) new InstrumentFM(parameters);
     }
     return pInst;
   }

@@ -20,15 +20,6 @@ InstrumentNotDumb::InstrumentNotDumb(const std::string &param)
   */
 
   cout << param << endl;
-
-  KeyValue kv(param);
-  int N;
-
-  if (!kv.to_int("N",N))
-    N = 60; //default value
-  
-  
-
 }
 
 void InstrumentNotDumb::command(long cmd, long note, long vel) {
@@ -43,7 +34,7 @@ void InstrumentNotDumb::command(long cmd, long note, long vel) {
 
     step = 2 * M_PI * nota;
     velc = vel/127.0;
-    index = 0;
+    
     phase = 0;
 
   
@@ -66,7 +57,7 @@ const vector<float> & InstrumentNotDumb::synthesize() {
 
   
   for (unsigned int i=0; i<x.size(); ++i) {
-    x[i] = 0.1*velc*sin(phase);
+    x[i] = 1*velc*sin(phase);
 
     phase += step;
 

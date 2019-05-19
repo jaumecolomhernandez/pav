@@ -1,6 +1,6 @@
 #include <iostream>
 #include <math.h>
-#include "instrument_not_dumb.h"
+#include "instrumentFM.h"
 #include "keyvalue.h"
 
 #include <stdlib.h>
@@ -13,22 +13,16 @@ InstrumentFM::InstrumentFM(const std::string &param)
   bActive = false;
   x.resize(BSIZE);
 
-  /*
-    You can use the class keyvalue to parse "param" 
-    and configure your instrument.
-    Take a Look at keyvalue.h    
-  */
-
   cout << param << endl;
 
   KeyValue kv(param);
-  int N;
 
-  if (!kv.to_int("N",N))
-    N = 60; //default value
-  
-  
+  if (!kv.to_float("l",l))
+    l = 1; //default value
 
+  if (!kv.to_float("m",m))
+    m = 1; //default value
+  
 }
 
 void InstrumentFM::command(long cmd, long note, long vel) {
@@ -36,17 +30,20 @@ void InstrumentFM::command(long cmd, long note, long vel) {
     bActive = true;
     adsr.start();
    
-
-
     float f0=440.0*pow(2,(((float)note-69.0)/12.0));     
     float nota = f0/SamplingRate;
 
-    step = 2 * M_PI * nota;
-    velc = vel/127.0;
-    index = 0;
-    phase = 0;
+    step1 = 2 * M_PI * nota;
+    step2 = 2 * M_PI * l * nota;
 
+    I = m/step2;
+
+    velc = vel/127.0;
   
+    phase1 = 0; phase2 = 0; 
+
+    cout << vel << endl;
+
   } else if (cmd == 0 || cmd == 8) {
     adsr.stop();
   }
@@ -66,11 +63,13 @@ const vector<float> & InstrumentFM::synthesize() {
 
   
   for (unsigned int i=0; i<x.size(); ++i) {
-    x[i] = 0.1*velc*sin(phase);
+    x[i] = 1*velc*sin(phase1 + I*sin(phase2));
 
-    phase += step;
+    phase1 += step1;
+    phase2 += step2;
 
-    while(phase>2*M_PI) phase -= 2*M_PI;
+    while(phase1>2*M_PI) phase1 -= 2*M_PI;
+    while(phase2>2*M_PI) phase2 -= 2*M_PI;
   }
 
   adsr(x); //apply envelope to x (and updates internal status of adsr)

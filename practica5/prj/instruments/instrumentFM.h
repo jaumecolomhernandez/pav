@@ -1,5 +1,5 @@
-#ifndef INSTRUMENT_NOT_DUMB
-#define INSTRUMENT_NOT_DUMB
+#ifndef INSTRUMENT_FM
+#define INSTRUMENT_FM
 
 #include <vector>
 #include <string>
@@ -11,9 +11,19 @@ namespace upc {
     EnvelopeADSR adsr;
     unsigned int index;
     std::vector<float> tbl;
-    float step;
+
+    float l;
+    float m;
+    
+    float step1;
+    float step2;
+
     float velc;
-    float phase;
+    
+    float phase1;
+    float phase2;
+
+    float I;
   public:
     InstrumentFM(const std::string &param = "");
     void command(long cmd, long note, long velocity=1); 
