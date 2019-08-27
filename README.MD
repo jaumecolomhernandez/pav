@@ -1,2 +1,2 @@
 # PAV REPOSITORY
-Codi de les diferents pràctiques de l'assignatura PAV
+This is the code repository for the Audio and Voice Processing subject at ETSETB.

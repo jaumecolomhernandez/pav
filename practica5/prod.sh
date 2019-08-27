@@ -1,7 +1,7 @@
 #!/bin/sh
 
 
-#Script to run the synth and play the computed audio
+# Script to run the synth and play the computed audio
 
 make -C ./prj all
 
